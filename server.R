@@ -14,7 +14,7 @@ pal_exp <- colorFactor(
   na.color = 'yellow',
   levels = c('likely unconstrained', 'undetermined', 'likely constrained'))
 
-# color palette for CSCI performance
+# color palette for CSCI scoring performance
 pal_prf <- colorFactor(
   palette = c(
     RColorBrewer::brewer.pal(9, 'Blues')[c(9, 6, 3)],
@@ -23,9 +23,9 @@ pal_prf <- colorFactor(
     ),
   na.color = 'yellow',
   levels = c(
-    'over performing (lu)', 'expected (lu)', 'under performing (lu)',
-    'over performing (u)', 'expected (u)','under performing (u)',  
-    'over performing (lc)', 'expected (lc)', 'under performing (lc)')
+    'over scoring (lu)', 'expected (lu)', 'under scoring (lu)',
+    'over scoring (u)', 'expected (u)','under scoring (u)',  
+    'over scoring (lc)', 'expected (lc)', 'under scoring (lc)')
   )
 
 # server logic
@@ -357,7 +357,7 @@ server <- function(input, output, session) {
                        fillColor = ~pal_prf(perf_mlt), color = 'black'
       ) %>% 
       addLegend("topright", pal = pal_prf, values = scr_exp_map$perf_mlt,
-                title = "CSCI performance (points)",
+                title = "CSCI scoring (points)",
                 opacity = 1
       )
   
@@ -379,7 +379,7 @@ server <- function(input, output, session) {
       mutate(strcls = factor(strcls, levels = rev(levels(strcls)))) %>% 
       rename(
         `Stream Class` = strcls,
-        `Relative\nperformance` = perf_mlt,
+        `Relative\nscoring` = perf_mlt,
         Type = typelv
         )
 
@@ -439,9 +439,9 @@ server <- function(input, output, session) {
         scale_x_continuous('CSCI') +
         scale_y_discrete('Site') +
         scale_colour_manual(values = pal_exp(levels(toplo1$`Stream Class`))) +
-        geom_point(aes(x = csci, fill = `Relative\nperformance`), shape = 21, size = 4, alpha = 0.8) +
+        geom_point(aes(x = csci, fill = `Relative\nscoring`), shape = 21, size = 4, alpha = 0.8) +
         geom_vline(xintercept = thrsh(), linetype = 'dashed', size = 1) +
-        scale_fill_manual(values = pal_prf(levels(toplo1$`Relative\nperformance`)), na.value = 'yellow')
+        scale_fill_manual(values = pal_prf(levels(toplo1$`Relative\nscoring`)), na.value = 'yellow')
       
     }
     

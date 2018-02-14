@@ -168,10 +168,10 @@ getcls2 <- function(datin, thrsh = 0.79, tails = 0.05, modls = c('core', 'full')
 #' @param scrs CSCI scores by COMID and StationCode
 #' @param thrsh numeric for CSCI scoring thresholds
 #' @param tails numeric for tails to truncate expectations for overlap with thrsh
-#' @param lbs chr string labels for site performance as over, expected, or under performing
+#' @param lbs chr string labels for site performance as over, expected, or under scoring
 #' @param ... additional arguments passed to getcls
 #' 
-site_exp <- function(datin, scrs, thrsh = 0.79, tails = 0.05, lbs = list('over performing' = 2, 'expected' = 1, 'under performing' = 0),
+site_exp <- function(datin, scrs, thrsh = 0.79, tails = 0.05, lbs = list('over scoring' = 2, 'expected' = 1, 'under scoring' = 0),
                      ...
 ){
   
@@ -242,7 +242,7 @@ site_exp <- function(datin, scrs, thrsh = 0.79, tails = 0.05, lbs = list('over p
 #' @param tails numeric for tails to truncate expectations for overlap with thrsh
 #' @param obs_sc logical if observed score text qualifiers are returned
 #' @param get_cds logical indicating if three level codes as list is returned
-#' @details  The three level codes for type are (0, 1, 2), (0, 1, 2), and (0, 1).  The first level is likely unconstrained (0), undetermined (1), and likely constrained (2); the second level is under-performing (0), as expected (1), and over-performing (2); the third level is below threshold (0) and above threshold (1)
+#' @details  The three level codes for type are (0, 1, 2), (0, 1, 2), and (0, 1).  The first level is likely unconstrained (0), undetermined (1), and likely constrained (2); the second level is under-scoring (0), as expected (1), and over-scoring (2); the third level is below threshold (0) and above threshold (1)
 typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_cds = FALSE){
   
   # type labels from codes in vec
@@ -321,8 +321,8 @@ typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_
 #' @param tails numeric for tails to truncate expectations for overlap with thrsh
 #' @param obs_sc logical if observed score text qualifiers are returned
 #' @param lbs_str chr string labels for stream comid expectation as likely constrained, undetermind, and likely unconstrained
-#' @param lbs_sta chr string labels for site/station performance as over, expected, or under performing
-get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely unconstrained' = 0, 'undetermined' = 1, 'likely constrained' = 2), lbs_sta = list('over performing' = 2, 'expected' = 1, 'under performing' = 0)){ 
+#' @param lbs_sta chr string labels for site/station performance as over, expected, or under scoring
+get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely unconstrained' = 0, 'undetermined' = 1, 'likely constrained' = 2), lbs_sta = list('over scoring' = 2, 'expected' = 1, 'under scoring' = 0)){ 
   
   # typeoc labels
   typeoc <- typ_lbs(get_cds = T) %>% 
@@ -380,9 +380,9 @@ get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely un
 
 #' Get performance multi classifications
 #' Input is scr_exp() reactive from app
-get_perf_mlt <- function(scr_exp, lbs = c('over performing (lu)', 'expected (lu)', 'under performing (lu)',
-                                          'over performing (u)', 'expected (u)', 'under performing (u)',
-                                          'over performing (lc)', 'expected (lc)', 'under performing (lc)')
+get_perf_mlt <- function(scr_exp, lbs = c('over scoring (lu)', 'expected (lu)', 'under scoring (lu)',
+                                          'over scoring (u)', 'expected (u)', 'under scoring (u)',
+                                          'over scoring (lc)', 'expected (lc)', 'under scoring (lc)')
 ){
   
   # format perf_mlt as column combos of perf and strcls

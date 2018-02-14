@@ -28,7 +28,7 @@ shinyUI(fluidPage(
   useShinyCustom(slider_delay = '1500'),
   
   # Application title
-  h1('Stream classification in the Santa Margarita Watershed', 
+  h1('Stream classification by watershed', 
      style = "font-family: 'Volkhov';
         font-weight: 500; line-height: 1.1"),
   
@@ -37,7 +37,7 @@ shinyUI(fluidPage(
     column(width = 3, img(src = "sccwrp_logo.jpg", width = '150px'), align = 'center', style = "margin-top: 0px;"),
     
     column(width = 9, 
-           h5('This application can be used to explore stream and site classifications for the Santa Margarita Watershed.  Classications are based on the relationship of field CSCI scores at a site to biological expectations for the stream reach.  Expectations are based on user-defined parameters for CSCI thresholds and confidence in the biological expectation. Site classifications for CSCI scores are defined as over-performing, expected, and under-performing.  Stream reach expectations are defined as likely constrained, undetermined, or likely unconstrained. Last updated:', dt)
+           h5('This application can be used to explore stream and site classifications by Watershed.  Classications are based on the relationship of field CSCI scores at a site to biological expectations for the stream reach.  Expectations are based on user-defined parameters for CSCI thresholds and confidence in the biological expectation. Site classifications for CSCI scores are defined as over-scoring, expected, and under-scoring.  Stream reach expectations are defined as likely constrained, undetermined, or likely unconstrained. Last updated:', dt)
     ),
 
     column(width = 12, 
@@ -58,7 +58,7 @@ shinyUI(fluidPage(
     
     tabPanel('Maps',
 
-      h5('These two maps show stream reach classifications by COMID and CSCI scores at monitoring stations.  The', strong('left map'), 'shows the predicted CSCI score for a COMID and measured CSCI score at a station from from field data.  The', strong('right map'), 'shows the CSCI score expectation for a COMID and the site classification (or performance) of a monitoring station.'),   
+      h5('These two maps show stream reach classifications by COMID and CSCI scores at monitoring stations.  The', strong('left map'), 'shows the predicted CSCI score for a COMID and measured CSCI score at a station from from field data.  The', strong('right map'), 'shows the CSCI score expectation for a COMID and the site classification (or scoring performance) of a monitoring station.'),   
 
       column(width = 12, 
              
@@ -121,7 +121,7 @@ shinyUI(fluidPage(
       
       column(width = 6,
           
-        h5('These controls change the attributes in the',  strong('right map'), '. The first slider controls the CSCI threshold and the second slider controls the certainty range of the predicted CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and performance of the CSCI score at a sampling station. See the plot tab for more.'),      
+        h5('These controls change the attributes in the',  strong('right map'), '. The first slider controls the CSCI threshold and the second slider controls the certainty range of the predicted CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and scoring performance of the CSCI score at a sampling station. See the plot tab for more.'),      
              
         # select CSCI threshold, master
         sliderTextInput(
@@ -166,7 +166,7 @@ shinyUI(fluidPage(
     
     tabPanel('Plot',
       
-      h5('This plot shows the CSCI score expectations for every stream reach with CSCI sampling stations.  The CSCI threshold and confidence range define the reach expectation and the CSCI performance for the sampling stations.  Toggle the sliders to see how these change on the plot, including the maps and table in the other tabs.'),
+      h5('This plot shows the CSCI score expectations for every stream reach with CSCI sampling stations.  The CSCI threshold and confidence range define the reach expectation and the CSCI scoring performance for the sampling stations.  Toggle the sliders to see how these change on the plot, including the maps and table in the other tabs.'),
              
       column(width = 4,
              
@@ -230,7 +230,7 @@ shinyUI(fluidPage(
         
     tabPanel('Table', 
 
-      h5('This table summarizes the sampling station performance for CSCI scores shown in the maps and plot in the other tabs. The "types" are finer divisions that further categorize sites relative to the performance.'),
+      h5('This table summarizes the sampling station scoring performance for CSCI scores shown in the maps and plot in the other tabs. The "types" are finer divisions that further categorize sites relative to the scoring performance.'),
              
       column(width = 6,
             
