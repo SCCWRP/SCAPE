@@ -49,11 +49,9 @@ spat <- readOGR(flw_pth) %>%
 # process separate spatial and score files for each watershed
 
 # sheds to process, appended to file names
-shed <- shed %>% 
-  mutate(shds = paste('SMR', tolower(SMR_Region), sep = '-'))
+shds <- shed$SMR_Region
 
-shds <- shed$shds
-
+# process and save files for each shed
 for(shd in shds){
   
   # counter
@@ -64,8 +62,9 @@ for(shd in shds){
     filter(shds %in% shd)
   
   # create spatial polyines from shed intersect, left_join with csci scrs
+  sel <- st_covered_by(spat, shd_tmp, sparse = F) 
   spat_tmp <- spat %>% 
-    st_intersection(shd_tmp) %>% 
+    filter(sel[, 1]) %>% 
     left_join(comid, by = 'COMID') %>% 
     select(COMID, matches('^full0'))
   
@@ -80,7 +79,7 @@ for(shd in shds){
   assign(spat_shd, spat_tmp)
   
   # save unique scrs, spat
-  save(list = scrs_shd, file = paste0('data/', scrs_shd))
-  save(list = spat_shd, file = paste0('data/', spat_shd))
+  save(list = scrs_shd, file = paste0('data/', scrs_shd, '.RData'))
+  save(list = spat_shd, file = paste0('data/', spat_shd, '.RData'))
   
 }
