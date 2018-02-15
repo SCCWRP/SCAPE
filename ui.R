@@ -124,14 +124,14 @@ shinyUI(fluidPage(
         h5('These controls change the attributes in the',  strong('right map'), '. The first slider controls the CSCI threshold and the second slider controls the certainty range of the predicted CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and scoring performance of the CSCI score at a sampling station. See the plot tab for more.'),      
              
         # select CSCI threshold, master
-        sliderTextInput(
-          inputId = "thrsh",
-          label = h6("CSCI reference threshold:"),
-          grid = FALSE,
-          force_edges = TRUE,
-          selected = '10% (0.79)',
-          choices = c('1% (0.63)', '10% (0.79)', '30% (0.89)'),
-          width = '600px'
+        customSliderInput('thrsh', 
+          label = h6("CSCI threshold:"), 
+          min = 0, 
+          max = 1.5,
+          value = 0.79, 
+          step = 0.01,
+          width = '600px', 
+          ticks = FALSE
         ),
 
         # selected tails, master
@@ -171,14 +171,14 @@ shinyUI(fluidPage(
       column(width = 4,
              
         # select CSCI threshold
-        sliderTextInput(
-          inputId = "thrsh2", 
-          label = h6("CSCI reference threshold:"),  
-          grid = FALSE, 
-          force_edges = TRUE,
-          selected = '10% (0.79)',
-          choices = c('1% (0.63)', '10% (0.79)', '30% (0.89)'), 
-          width = '600px'
+        customSliderInput('thrsh2', 
+          label = h6("CSCI threshold:"), 
+          min = 0, 
+          max = 1.5,
+          value = 0.79, 
+          step = 0.01,
+          width = '600px', 
+          ticks = FALSE
         )
         
       ),   
@@ -234,16 +234,16 @@ shinyUI(fluidPage(
              
       column(width = 6,
             
-            # select CSCI threshold
-            sliderTextInput(
-             inputId = "thrsh3", 
-             label = h6("CSCI reference threshold:"),  
-             grid = FALSE, 
-             force_edges = TRUE,
-             selected = '10% (0.79)',
-             choices = c('1% (0.63)', '10% (0.79)', '30% (0.89)'), 
-             width = '600px'
-            )
+        # select CSCI threshold
+        customSliderInput('thrsh3', 
+          label = h6("CSCI threshold:"), 
+          min = 0, 
+          max = 1.5,
+          value = 0.79, 
+          step = 0.01,
+          width = '600px', 
+          ticks = FALSE
+        )
 
       ),   
       

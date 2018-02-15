@@ -12,7 +12,7 @@ prstr <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 # whole state data
 
 flw_pth <- 'ignore/SMR_NHDPlus.shp'
-shd_pth <- 'ignore/SMR_Sheds_diss.shp'
+shd_pth <- 'ignore/calwater_SWAMP3Code.shp'
 scr_pth <- 'ignore/csci_061917.csv'
 exp_pth <- 'ignore/comid_statewide.Rdata'
 
@@ -49,7 +49,7 @@ spat <- readOGR(flw_pth) %>%
 # process separate spatial and score files for each watershed
 
 # sheds to process, appended to file names
-shds <- shed$SMR_Region
+shds <- 902 #shed$SWAMP3CODE
 
 # process and save files for each shed
 for(shd in shds){
@@ -59,7 +59,7 @@ for(shd in shds){
   
   # filter watershed for intersect
   shd_tmp <- shed %>% 
-    filter(shds %in% shd)
+    filter(SWAMP3CODE %in% shd)
   
   # create spatial polyines from shed intersect, left_join with csci scrs
   sel <- st_covered_by(spat, shd_tmp, sparse = F) 
