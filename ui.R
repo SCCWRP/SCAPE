@@ -37,7 +37,7 @@ shinyUI(fluidPage(
     column(width = 3, img(src = "sccwrp_logo.jpg", width = '150px'), align = 'center', style = "margin-top: 0px;"),
     
     column(width = 9, 
-           h5('This application can be used to explore stream and site classifications by Watershed.  Classications are based on the relationship of field CSCI scores at a site to biological expectations for the stream reach.  Expectations are based on user-defined parameters for CSCI thresholds and confidence in the biological expectation. Site classifications for CSCI scores are defined as over-scoring, expected, and under-scoring.  Stream reach expectations are defined as likely constrained, undetermined, or likely unconstrained. Last updated:', dt)
+           h5('This application can be used to explore stream and site classifications by Watershed.  Classications are based on the relationship of field CSCI scores at a site to biological expectations for the stream reach.  Expectations are based on user-defined parameters for CSCI thresholds and confidence in the biological expectation. Site classifications for CSCI scores are defined as over-scoring, expected, and under-scoring.  Stream reach expectations are defined as likely constrained, possibly constrained, possibly unconstrained, and likely unconstrained. Last updated:', dt)
     ),
 
     column(width = 12, 
@@ -264,7 +264,7 @@ shinyUI(fluidPage(
       # table output
       column(width = 12, 
       
-        DT::dataTableOutput('tab_sum'), 
+        DT::dataTableOutput('tab_sum'),
         HTML('<p></p>')
                    
       )

@@ -7,7 +7,7 @@
 #' @param lbs chr string labels for interval classifications
 #' 
 #' @return a nested data frame sorted by increaesing median value of expected score of COMID and nested columns as original data, cut data by tails, and sream classification (strcls).  The strcls column indicates if the ranges in datcut are within, above, or below those defind by thrsh.
-getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full'), lbs = list('likely unconstrained' = 0, 'undetermined' = 1, 'likely constrained' = 2)){
+getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full'), lbs = list('likely unconstrained' = 0, 'possibly unconstrained' = 1, 'possibly constrained' = 2, 'likely constrained' = 3)){
   
   # sanity check
   if(tails >= 0.5)
@@ -15,7 +15,7 @@ getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full')
   
   # models argument
   modls <- match.arg(modls)
-  
+
   dat <- datin
   st_geometry(dat) <- NULL
   dat <- dat %>% 
@@ -30,7 +30,7 @@ getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full')
         # get quantile labels to filter
         lovl <- 100 * tails
         hivl <- 100 * (1 -  tails) 
-        vls <- c(lovl, hivl) %>% 
+        vls <- c(lovl, 50, hivl) %>% 
           str_pad(2, pad = '0') %>% 
           paste0(modls, '0.', .)
         
@@ -39,7 +39,6 @@ getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full')
           filter(var %in% vls)
         
         return(x)
-        
         
       }),
       
@@ -54,12 +53,8 @@ getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full')
           
         } 
         
-        # get threshold range
-        rngs <- x$val %>% 
-          range
-        
         # find if above/below or covering thrsh
-        cls <- findInterval(thrsh, rngs)
+        cls <- findInterval(thrsh, x$val)
         
         return(cls)
         
@@ -95,7 +90,7 @@ getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full')
 #' @param lbs chr string labels for interval classifications
 #' 
 #' @return a nested data frame sorted by increaesing median value of expected score of COMID and nested columns as original data, cut data by tails, and sream classification (strcls).  The strcls column indicates if the ranges in datcut are within, above, or below those defind by thrsh.
-getcls2 <- function(datin, thrsh = 0.79, tails = 0.05, modls = c('core', 'full'), lbs = list('likely unconstrained' = 0, 'undetermined' = 1, 'likely constrained' = 2)){
+getcls2 <- function(datin, thrsh = 0.79, tails = 0.05, modls = c('core', 'full'), lbs = list('likely unconstrained' = 0, 'possibly unconstrained' = 1, 'possibly constrained' = 2, 'likely constrained' = 3)){
   
   # sanity check
   if(tails >= 0.5)
@@ -126,17 +121,16 @@ getcls2 <- function(datin, thrsh = 0.79, tails = 0.05, modls = c('core', 'full')
         # get quantile labels to filter
         lovl <- 100 * tails
         hivl <- 100 * (1 -  tails) 
-        vls <- c(lovl, hivl) %>% 
+        vls <- c(lovl, 50, hivl) %>% 
           str_pad(2, pad = '0') %>% 
           paste0(modls, '0.', .)
         
         # filter by quantile labels and median
-        rngs <- x %>% 
+        ints <- x %>% 
           filter(var %in% vls) %>% 
-          .$val %>% 
-          range
+          .$val 
         
-        cls <- findInterval(thrsh, rngs)
+        cls <- findInterval(thrsh, ints)
         
         return(cls)
         
@@ -204,7 +198,7 @@ site_exp <- function(datin, scrs, thrsh = 0.79, tails = 0.05, lbs = list('over s
         } 
         
         # within datcut interval
-        prf <- findInterval(csci, datcut$val)
+        prf <- findInterval(csci, range(datcut$val))
         
         return(prf)
         
@@ -242,7 +236,7 @@ site_exp <- function(datin, scrs, thrsh = 0.79, tails = 0.05, lbs = list('over s
 #' @param tails numeric for tails to truncate expectations for overlap with thrsh
 #' @param obs_sc logical if observed score text qualifiers are returned
 #' @param get_cds logical indicating if three level codes as list is returned
-#' @details  The three level codes for type are (0, 1, 2), (0, 1, 2), and (0, 1).  The first level is likely unconstrained (0), undetermined (1), and likely constrained (2); the second level is under-scoring (0), as expected (1), and over-scoring (2); the third level is below threshold (0) and above threshold (1)
+#' @details  The three level codes for type are (0, 1, 2, 3), (0, 1, 2), and (0, 1).  The first level is likely unconstrained (0), possibly unconstrained (1), possibly constrained (2), likely constrianed (3); the second level is under-scoring (0), as expected (1), and over-scoring (2); the third level is below threshold (0) and above threshold (1)
 typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_cds = FALSE){
   
   # type labels from codes in vec
@@ -256,9 +250,13 @@ typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_
     Type07 = '1_1_0',  
     Type08 = '1_0_0',
     Type09 = '2_2_1',
-    Type10 = '2_2_0',
+    Type10 = '2_1_1',
     Type11 = '2_1_0',
-    Type12 = '2_0_0'
+    Type12 = '2_0_0',
+    Type13 = '3_2_1',
+    Type14 = '3_2_0', 
+    Type15 = '3_1_0', 
+    Type16 = '3_0_0'
   )
   
   if(get_cds) return(lbs)
@@ -295,11 +293,15 @@ typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_
     Type06 = paste(thrsh, 'to', vls[2]),
     Type07 = paste(vls[1], 'to', thrsh), 
     Type08 = paste('<', vls[1]),
-    Type09 = paste('>=', thrsh),
-    Type10 = paste(vls[2], 'to', thrsh),
-    Type11 = paste(vls[1], 'to', vls[2]),
-    Type12 = paste('<', vls[1])
-  ) %>% 
+    Type09 = paste('>=', vls[2]),
+    Type10 = paste(thrsh, 'to', vls[2]),
+    Type11 = paste(vls[1], 'to', thrsh), 
+    Type12 = paste('<', vls[1]),
+    Type13 = paste('>=', thrsh),
+    Type14 = paste(vls[2], 'to', thrsh),
+    Type15 = paste(vls[1], 'to', vls[2]),
+    Type16 = paste('<', vls[1])
+    ) %>% 
     enframe('vec', 'obs_sc') %>% 
     unnest
   
@@ -320,9 +322,9 @@ typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_
 #' @param thrsh numeric for CSCI scoring thresholds
 #' @param tails numeric for tails to truncate expectations for overlap with thrsh
 #' @param obs_sc logical if observed score text qualifiers are returned
-#' @param lbs_str chr string labels for stream comid expectation as likely constrained, undetermind, and likely unconstrained
+#' @param lbs_str chr string labels for stream comid expectation as likely constrained, possibly constrained, possibly unconstrained, or likely unconstrained
 #' @param lbs_sta chr string labels for site/station performance as over, expected, or under scoring
-get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely unconstrained' = 0, 'undetermined' = 1, 'likely constrained' = 2), lbs_sta = list('over scoring' = 2, 'expected' = 1, 'under scoring' = 0)){ 
+get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely unconstrained' = 0, 'possibly unconstrained' = 1, 'possibly constrained' = 2, 'likely constrained' = 3), lbs_sta = list('over scoring' = 2, 'expected' = 1, 'under scoring' = 0)){ 
   
   # typeoc labels
   typeoc <- typ_lbs(get_cds = T) %>% 
@@ -381,7 +383,8 @@ get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely un
 #' Get performance multi classifications
 #' Input is scr_exp() reactive from app
 get_perf_mlt <- function(scr_exp, lbs = c('over scoring (lu)', 'expected (lu)', 'under scoring (lu)',
-                                          'over scoring (u)', 'expected (u)', 'under scoring (u)',
+                                          'over scoring (pu)', 'expected (pu)', 'under scoring (pu)',
+                                          'over scoring (pc)', 'expected (pc)', 'under scoring (pc)',
                                           'over scoring (lc)', 'expected (lc)', 'under scoring (lc)')
 ){
   

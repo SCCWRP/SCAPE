@@ -5,6 +5,6 @@ account: beckmw
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 281481
-bundleId: 1224994
+bundleId: 1227101
 url: https://beckmw.shinyapps.io/biological_constraints/
-when: 1518721694.03114
+when: 1518829813.35135

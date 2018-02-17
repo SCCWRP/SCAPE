@@ -6,25 +6,28 @@ library(stringr)
 library(scales)
 library(leaflet.minicharts)
 library(manipulateWidget)
+library(RColorBrewer)
 source('R/funcs.R')
 
 # color palette for stream expectations
 pal_exp <- colorFactor(
-  palette = RColorBrewer::brewer.pal(9, 'Set1')[c(2, 3, 1)],
+  palette = RColorBrewer::brewer.pal(9, 'Paired')[c(2, 1, 5, 6)],
   na.color = 'yellow',
-  levels = c('likely unconstrained', 'undetermined', 'likely constrained'))
+  levels = c('likely unconstrained', 'possibly unconstrained', 'possibly constrained', 'likely constrained'))
 
 # color palette for CSCI scoring performance
 pal_prf <- colorFactor(
   palette = c(
-    RColorBrewer::brewer.pal(9, 'Blues')[c(9, 6, 3)],
-    RColorBrewer::brewer.pal(9, 'Greens')[c(9, 6, 3)],
-    RColorBrewer::brewer.pal(9, 'Reds')[c(9, 6, 3)]
+    colorRampPalette(brewer.pal(9, 'Blues'))(100)[c(90, 74, 58)],
+    colorRampPalette(brewer.pal(9, 'Blues'))(100)[c(42, 26, 10)],
+    colorRampPalette(brewer.pal(9, 'Reds'))(100)[c(42, 26, 10)],
+    colorRampPalette(brewer.pal(9, 'Reds'))(100)[c(90, 74, 58)]
     ),
   na.color = 'yellow',
   levels = c(
     'over scoring (lu)', 'expected (lu)', 'under scoring (lu)',
-    'over scoring (u)', 'expected (u)','under scoring (u)',  
+    'over scoring (pu)', 'expected (pu)', 'under scoring (pu)',
+    'over scoring (pc)', 'expected (pc)', 'under scoring (pc)',
     'over scoring (lc)', 'expected (lc)', 'under scoring (lc)')
   )
 
@@ -82,7 +85,10 @@ server <- function(input, output, session) {
       gather('var', 'val') %>% 
       .$val %>% 
       range(na.rm = T)
-    dmn_difr <- c(min(scrs()$csci) - dmn_difr[2], max(scrs()$csci) - dmn_difr[1])
+    dmn_difr <- c(min(scrs()$csci) - dmn_difr[2], max(scrs()$csci) - dmn_difr[1]) %>% 
+      abs %>% 
+      max
+    dmn_difr <- c(-1 * dmn_difr, dmn_difr)
     
     colorNumeric(
       palette = c('black', 'purple', 'white', 'darkgreen', 'black'),
@@ -420,7 +426,7 @@ server <- function(input, output, session) {
         ) +
         scale_x_continuous('CSCI') +
         scale_y_discrete('Site') +
-        geom_point(aes(x = csci), fill = 'white', shape = 21, size = 4, alpha = 0.8) +
+        geom_point(aes(x = csci), fill = 'white', shape = 21, size = 6, alpha = 0.8) +
         geom_vline(xintercept = thrsh, linetype = 'dashed', size = 1)
            
     # otherwise full
@@ -437,7 +443,7 @@ server <- function(input, output, session) {
         scale_x_continuous('CSCI') +
         scale_y_discrete('Site') +
         scale_colour_manual(values = pal_exp(levels(toplo1$`Stream Class`))) +
-        geom_point(aes(x = csci, fill = `Relative\nscoring`), shape = 21, size = 4, alpha = 0.8) +
+        geom_point(aes(x = csci, fill = `Relative\nscoring`), shape = 21, size = 6, alpha = 0.8) +
         geom_vline(xintercept = thrsh, linetype = 'dashed', size = 1) +
         scale_fill_manual(values = pal_prf(levels(toplo1$`Relative\nscoring`)), na.value = 'yellow')
       
@@ -449,14 +455,14 @@ server <- function(input, output, session) {
   
   # summary tables
   output$tab_sum <- DT::renderDataTable({
-    
+
     thrsh <- input$thrsh
-    
-    # summary table by csci type          
+
+    # summary table by csci type
     totab <- get_tab(scr_exp(), thrsh = thrsh, tails = tlinp())
-      
+
     return(totab)
-      
-  }, rownames = F, options = list(dom = 't', pageLength = 12))
+
+  }, rownames = F, options = list(dom = 't', pageLength = 16))
    
 }
