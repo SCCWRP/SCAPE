@@ -38,7 +38,7 @@ server <- function(input, output, session) {
   spat <- reactive({
     
     shd <- input$shd
-    spat <- paste0('spat_', toupper(shd))
+    spat <- paste0('spat_', shd)
     load(file = paste0('data/', spat, '.RData'))
     get(spat)
     
@@ -48,7 +48,7 @@ server <- function(input, output, session) {
   scrs <- reactive({
     
     shd <- input$shd
-    scrs <- paste0('scrs_', toupper(shd))
+    scrs <- paste0('scrs_', shd)
     load(file = paste0('data/', scrs, '.RData'))
     get(scrs)
     

@@ -17,8 +17,7 @@ dt <- read_html('https://github.com/SCCWRP/SGRRMP/commits/master') %>%
 # watersheds to select from data folder
 shds <- list.files('data') %>% 
   gsub('\\.RData$|^scrs_|^spat_', '', .) %>% 
-  unique %>% 
-  tolower
+  unique
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
