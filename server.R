@@ -2,12 +2,15 @@ library(shiny)
 library(sf)
 library(tidyverse)
 library(leaflet)
+library(mapview)
 library(stringr)
 library(scales)
 library(leaflet.minicharts)
 library(manipulateWidget)
 library(RColorBrewer)
 source('R/funcs.R')
+
+prj <- '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
 
 # color palette for stream expectations
 pal_exp <- colorFactor(
@@ -51,6 +54,18 @@ server <- function(input, output, session) {
     scrs <- paste0('scrs_', shd)
     load(file = paste0('data/', scrs, '.RData'))
     get(scrs)
+    
+  })
+  
+  # csci scores from watershed selection, as mapview object
+  scrs_mv <- reactive({
+    
+    scrs() %>% 
+      st_as_sf(coords = c('long', 'lat')) %>% 
+      st_set_crs(prj) %>% 
+      mapview(layer.name = 'reset') %>% 
+      .@map %>% 
+      syncWith('maps')
     
   })
   
@@ -269,24 +284,10 @@ server <- function(input, output, session) {
   })
   
   # non-reactive base map
-  output$map <- renderLeaflet(
-    
-    leaflet(scrs()) %>%
-      fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat)) %>% 
-      addProviderTiles(providers$CartoDB.Positron) %>% 
-      syncWith('maps')
-    
-  )
+  output$map <- renderLeaflet(scrs_mv())
   
   # non-reactive base map, condition expectations
-  output$map_exp <- renderLeaflet(
-    
-    leaflet(scrs()) %>%
-      fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat)) %>% 
-      addProviderTiles(providers$CartoDB.Positron) %>% 
-      syncWith('maps')
-    
-  )
+  output$map_exp <- renderLeaflet(scrs_mv())
   
   ##
   # reactive maps
@@ -302,7 +303,7 @@ server <- function(input, output, session) {
     dat <- dat()
     dat_exp <- dat_exp()
     scr_exp_map <- scr_exp_map()
-
+    
     # score expectations
     exp <- leafletProxy("map", data = dat) %>%
       clearMarkers() %>%
