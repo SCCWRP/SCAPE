@@ -23,7 +23,7 @@ shds <- list.files('data') %>%
 
 # column padding global
 pad <- 'padding:0px;'
-
+  
 # Define UI for application
 shinyUI(fluidPage(
   
@@ -32,20 +32,20 @@ shinyUI(fluidPage(
   useShinyCustom(slider_delay = '1500'),
   
   # Application title
-  h1('Landscape constraints on stream biological integrity', 
+  h1(HTML('<h1>Landscape constraints on stream biological integrity</h1>'), 
      style = "font-family: 'Volkhov';
      font-weight: 500; line-height: 1.1"),
   
   fluidRow(
     
+    column(width = 12, 
+           h4('Created by Marcus W. Beck,', a('marcusb@sccwrp.org', href = 'mailto:marcusb@sccwrp.org'), ", Raphael D. Mazor,", a('raphaelm@sccwrp.org', href = 'mailto:raphaelm@sccwrp.org'))
+    ),
+    
     column(width = 3, img(src = "sccwrp_logo.jpg", width = '150px'), align = 'center', style = "margin-top: 0px;"),
     
     column(width = 9, 
-           h5('This application can be used to explore landscape constraints on biological integrity of streams.  The application provides context for evaluating stream health by estimating an expectation of biological condition at a given stream reach relative to landscape drivers. Biological condition from field data using the California Stream Condition Index can be compared to the reach expectation.  The process begins by identifying stream classifications and expectations from user-defined parameters for CSCI thresholds and confidence in the biological expectation. Stream classifications of expected biological constraints are defined as likely unconstrained, possibly unconstrained, possibly constrained, and likely constrained.  Observed CSCI scores at a site are then characterized relative to the reach expectations as over-scoring, expected, or under-scoring.  Site performance relative to the expectation can be used to recommend priorities for management actions. Last updated:', dt)
-    ),
-    
-    column(width = 12, 
-           h4('Created by Marcus W. Beck,', a('marcusb@sccwrp.org', href = 'mailto:marcusb@sccwrp.org'), ", Raphael D. Mazor,", a('raphaelm@sccwrp.org', href = 'mailto:raphaelm@sccwrp.org'))
+           h5(HTML('This application can be used to explore landscape constraints on biological integrity of streams.  The application provides context for evaluating stream health by estimating an expectation of biological condition at a given stream reach relative to landscape drivers. Biological condition from field data using the California Stream Condition Index can be compared to the reach expectation.  The process begins by identifying stream classifications and expectations from user-defined parameters for CSCI thresholds and confidence in the biological expectation. Stream classifications of expected biological constraints are defined as likely unconstrained, possibly unconstrained, possibly constrained, and likely constrained.  Observed CSCI scores at a site are then characterized relative to the reach expectations as over-scoring, expected, or under-scoring.  Relative site scores given the expectation can be used to recommend priorities for management actions. View source <a href="https://github.com/SCCWRP/SGRRMP">here</a>. Last updated:'), dt)
     ), 
     
     column(width = 4, 
@@ -61,7 +61,9 @@ shinyUI(fluidPage(
   # master widgets    
   column(width = 12, 
          
-         h5('These controls determine how stream expectations and site performance is evaluated. The first slider controls the CSCI threshold and the second slider controls the certainty range of the expected CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and performance of the CSCI score at a station (see step 2). The third switch determines if results are averaged for each site across all visits, or if results for all visits are shown.  Turning the switch to the right will jitter repeat visits on the maps and all tabular summaries (step 4 and 5) will consider each visit as a unique event.'),
+         h4('Controlling the app:'),
+         
+         h5('These controls determine how stream expectations and relative site scores are evaluated. The first slider controls the CSCI threshold and the second slider controls the certainty range of the expected CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and the relative CSCI score at a station (see step 2). The third switch determines if results are averaged for each site across all visits, or if results for all visits are shown.  Turning the switch to the right will jitter repeat visits on the maps and all tabular summaries (step 4 and 5) will consider each visit as a unique event.'),
          
          # select CSCI threshold, master
          column(width = 4,    
@@ -92,7 +94,7 @@ shinyUI(fluidPage(
          column(width = 4, 
                 # jitr switch   
                 materialSwitch('jitr', 
-                               label = h6(HTML('Show results for repeat visits at each site:<br/><br/></br>')), 
+                               label = h6(HTML('Show individual samples at each site:<br/><br/></br>')), 
                                status = 'primary',
                                right = F, 
                                width = '400px'
@@ -102,43 +104,11 @@ shinyUI(fluidPage(
          
   ),
   
-  column(width = 12, 
-         
-         h5('These sliders control the aesthetics in the maps. Use them to change the point and line sizes.'), 
-         
-         # select point radius
-         column(width = 6,
-                customSliderInput("pt_sz", 
-                                  label = h6("Point size:"), 
-                                  min = 0, 
-                                  max = 15,
-                                  value = 4, 
-                                  step = 1, 
-                                  width = '400px', 
-                                  ticks = FALSE
-                )
-         ),
-         
-         # select line size
-         column(width = 6,
-                customSliderInput("ln_sz", 
-                                  label = h6("Line size:"), 
-                                  min = 0, 
-                                  max = 5,
-                                  value = 1, 
-                                  step = 0.1, 
-                                  width = '400px', 
-                                  ticks = FALSE
-                )
-         )          
-         
-  ),
-  
   tabsetPanel(id = 'alltabs', 
               
-              tabPanel('(1) Maps',
+              tabPanel('(1) View maps',
                        
-                       h5('These maps show stream reach classifications and CSCI scores at monitoring stations.  The', strong('left map'), 'shows the predicted median CSCI score for a reach and measured CSCI score at a station from from field data.  The', strong('right map'), 'shows the CSCI score expectation for a reach and the site performance at a station relative to the expectation. See the plot tab (step 2) for more details on how expectations and performance are determined. The toggle switch controls how the CSCI scores at the stations (points) on the left map are displayed.  The observed scores from field samples are shown when the switch is off and the differences between the observed scores and the stream reach median expectations are shown when the switch is on.'),
+                       h5('These maps show stream reach classifications and CSCI scores at monitoring stations.  The', strong('left map'), 'shows the predicted median CSCI score for a reach and observed CSCI score at a station from field data.  The', strong('right map'), 'shows the CSCI score expectation for a reach and the relative CSCI score at a station for the expectation. See the plot tab (step 2) for more details on how expectations and relative site scores are determined. The toggle switch controls how the CSCI scores at the stations (points) on the left map are displayed.  The observed scores from field samples are shown when the switch is off and the differences between the observed scores and the stream reach median expectations are shown when the switch is on.'),
                        
                        # show csci differences   
                        materialSwitch('difr', 
@@ -165,9 +135,9 @@ shinyUI(fluidPage(
                        
               ),
               
-              tabPanel('(2) Plot summary',
+              tabPanel('(2) View reach summary',
                        
-                       h5('This plot shows the range of CSCI score expectations for every stream reach with CSCI sampling stations.  The CSCI threshold and confidence range define the reach expectation and the CSCI performance for the sampling stations.  The median for the expected range of CSCI scores at a reach is shown as a white tick. Toggle the sliders to see how these change on the plot, including the maps and table in the other tabs.'),
+                       h5('This plot shows the range of CSCI score expectations for every stream reach with CSCI sampling stations.  The CSCI threshold and confidence range define the reach expectation and the relative CSCI score for the sampling stations.  The median for the expected range of CSCI scores at a reach is shown as a white tick. Toggle the sliders to see how these change on the plot, including the maps and table in the other tabs.'),
                        
                        column(width = 2,
                               
@@ -200,9 +170,9 @@ shinyUI(fluidPage(
                        
               ), 
               
-              tabPanel('(3) Table summary', 
+              tabPanel('(3) Tabulate reach summary', 
                        
-                       h5('This table summarizes the sampling station performance for CSCI scores shown in the maps and plot in steps 1 and 2. The "types" are finer divisions that further categorize sites relative to the performance and CSCI threshold.  The types are based on score performance and location relative to the selected CSCI threshold. The types can be used to recommend priorities for management actions in step 4.'),
+                       h5('This table summarizes the sampling stations for the relative CSCI scores shown in the maps and plot in steps 1 and 2. The "types" are finer divisions that further categorize sites the relative score and CSCI threshold.  The types are based on relative score and location relative to the selected CSCI threshold. The types can be used to recommend priorities for management actions in step 4.'),
                        
                        # table output
                        column(width = 12, 
@@ -214,7 +184,7 @@ shinyUI(fluidPage(
                        
               ),
               
-              tabPanel('(4) Prioritize types',
+              tabPanel('(4) Set reach priorities',
                        
                        h5('This plot can be used to identify potential management actions for each site type.  The plot on the right shows a graphical depiction of the types in the able in step 3.  Priorities for each type can be selected from none to many using the drop-down menus for each type on the left.  These priorities can then be viewed with the maps in step 5.'),
                        
@@ -360,7 +330,7 @@ shinyUI(fluidPage(
                        
                        ),
               
-              tabPanel('(5) Priority maps',
+              tabPanel('(5) View priorities',
                        
                        h5("These maps show the location of recommended priority actions defind for each site type in step 4. Each site can have more than one priority."),
                        
@@ -396,5 +366,6 @@ shinyUI(fluidPage(
               )
   
   ))
+
 
 

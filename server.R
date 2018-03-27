@@ -12,6 +12,8 @@ library(gridExtra)
 source('R/funcs.R')
 
 prj <- '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+lnsz <- 1.25
+ptsz <- 4.5
 
 # color palette for stream expectations
 pal_exp <- colorFactor(
@@ -355,7 +357,7 @@ server <- function(input, output, session) {
       mutate(strcls = factor(strcls, levels = rev(levels(strcls)))) %>%
       rename(
         `Stream Class` = strcls,
-        `Relative\nperformance` = perf_mlt,
+        `Relative\nscore` = perf_mlt,
         Type = typelv
       )
     
@@ -422,9 +424,9 @@ server <- function(input, output, session) {
         scale_x_continuous('CSCI') +
         scale_y_discrete('Site') +
         scale_colour_manual(values = pal_exp(levels(toplo1$`Stream Class`))) +
-        geom_point(aes(x = csci, fill = `Relative\nperformance`), shape = 21, size = 4, alpha = 0.8) +
+        geom_point(aes(x = csci, fill = `Relative\nscore`), shape = 21, size = 4, alpha = 0.8) +
         geom_vline(xintercept = thrsh(), linetype = 'dashed', size = 1) +
-        scale_fill_manual(values = pal_prf(levels(toplo1$`Relative\nperformance`)), na.value = 'yellow')
+        scale_fill_manual(values = pal_prf(levels(toplo1$`Relative\nscore`)), na.value = 'yellow')
       
     }
     
@@ -460,11 +462,11 @@ server <- function(input, output, session) {
     p <- ggplot(plot_ex(), aes(x = typelv)) +
       geom_errorbar(aes(ymin = minv, ymax = maxv, colour = `Stream class`), width = 0, size = 2, alpha = 0.2) +
       geom_errorbar(aes(ymin = minv_qt, ymax = maxv_qt, colour = `Stream class`), width = 0, size = 2, alpha = 0.7) +
-      geom_point(aes(y  = `CSCI score`, fill = `Relative\nperformance`), shape = 21, size = 7, alpha = 0.8) +
+      geom_point(aes(y  = `CSCI score`, fill = `Relative\nscore`), shape = 21, size = 7, alpha = 0.8) +
       geom_hline(yintercept = 0.79, linetype = 'dashed') +
       scale_colour_manual(values = pal_exp(levels(plot_ex()$`Stream class`)),
                           guide = guide_legend(direction = 'vertical', title.position = 'left')) +
-      scale_fill_manual(values = pal_prf(levels(plot_ex()$`Relative\nperformance`)),
+      scale_fill_manual(values = pal_prf(levels(plot_ex()$`Relative\nscore`)),
                         guide = guide_legend(ncol = 4, direction = 'vertical', title.position = 'left')) +
       scale_x_discrete(limits = rev(levels(plot_ex()$typelv))) +
       mythm +
@@ -506,8 +508,6 @@ server <- function(input, output, session) {
   observe({
     
     # other inputs
-    ptsz <- input$pt_sz
-    lnsz <- input$ln_sz
     difr <- input$difr
     
     # reactives
@@ -572,7 +572,7 @@ server <- function(input, output, session) {
                        fillColor = ~pal_prf(perf_mlt), color = 'black'
       ) %>%
       addLegend("topright", pal = pal_prf, values = scr_exp_map$perf_mlt,
-                title = "CSCI performance (points)",
+                title = "Relative CSCI (points)",
                 opacity = 1, na.label = "not in StreamCat"
       )
     
@@ -595,10 +595,6 @@ server <- function(input, output, session) {
   observe({
     
     input$alltabs
-    
-    # other inputs
-    ptsz <- input$pt_sz
-    lnsz <- input$ln_sz
     
     # reactives
     dat <- dat()

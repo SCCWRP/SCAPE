@@ -266,7 +266,7 @@ proc_all <- function(datin, scrs, thrsh, tails){
     mutate(data = map(data, spread, var, val)) %>% 
     unnest %>% 
     rename(
-      `Relative\nperformance` = perf_mlt,
+      `Relative\nscore` = perf_mlt,
       `Stream class` = strcls, 
       `CSCI score` = csci
     )
@@ -325,7 +325,7 @@ get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely un
     arrange(`typelv`) %>%
     rename(
       `Reach expectation` = strcls,
-      `Site performance` = perf,
+      `Relative score` = perf,
       `Observed score` = typeoc,
       Type = typelv
     ) %>%
@@ -333,7 +333,7 @@ get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely un
       Type = gsub('^Type|^Type0', '', Type),
       Type = as.numeric(Type)
     ) %>% 
-    dplyr::select(`Reach expectation`, `Site performance`, `Observed score`, Type, Sites)
+    dplyr::select(`Reach expectation`, `Relative score`, `Observed score`, Type, Sites)
   
   return(totab)
   
