@@ -66,13 +66,15 @@ exps_ex <- data.frame(
   stringsAsFactors = F
 ) 
 
+shd <- 'San Gabriel'
+
 # server logic
 server <- function(input, output, session) {
   
   # spatial polylines from watershed selection
   spat <- reactive({
     
-    shd <- input$shd
+    # shd <- input$shd
     spat <- paste0('spat_', shd)
     load(file = paste0('data/', spat, '.RData'))
     get(spat)
@@ -82,7 +84,7 @@ server <- function(input, output, session) {
   # csci scores from watershed selection
   scrs <- reactive({
     
-    shd <- input$shd
+    # shd <- input$shd
     scrs <- paste0('scrs_', shd)
     load(file = paste0('data/', scrs, '.RData'))
     get(scrs)
@@ -507,6 +509,8 @@ server <- function(input, output, session) {
   # reactive maps, all steps
   observe({
     
+    input$alltabs
+    
     # other inputs
     difr <- input$difr
     
@@ -612,10 +616,6 @@ server <- function(input, output, session) {
       clearMarkers() %>%
       clearShapes() %>%
       clearControls() %>% 
-      addLegend("topright", pal = pal_exp, values = ~strcls,
-                title = "Expected classification (lines)",
-                opacity = 1, na.label = "not in StreamCat"
-      ) %>% 
       addPolylines(opacity = 1, weight = lnsz, color = ~pal_exp(strcls), 
                    label = ~paste0(COMID, ', Stream class:', strcls)
       )

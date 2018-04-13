@@ -10,16 +10,15 @@ library(mapview)
 library(rvest)
 
 # last commit date
-dt <- read_html('https://github.com/SCCWRP/Biological_Constraints/commits/master') %>% 
+dt <- read_html('https://github.com/SCCWRP/SCAPE/commits/master') %>% 
   html_nodes(".commit-group-title") %>% 
   html_text %>% 
   .[1] %>% 
   gsub('^.*Commits on (.*)\\n.*$', '\\1', .)
-
-# watersheds to select from data folder
-shds <- list.files('data') %>% 
-  gsub('\\.RData$|^scrs_|^spat_', '', .) %>% 
-  unique
+# # watersheds to select from data folder
+# shds <- list.files('data') %>% 
+#   gsub('\\.RData$|^scrs_|^spat_', '', .) %>% 
+#   unique
 
 # column padding global
 pad <- 'padding:0px;'
@@ -32,38 +31,29 @@ shinyUI(fluidPage(
   useShinyCustom(slider_delay = '1500'),
   
   # Application title
-  h1(HTML('<h1>Landscape constraints on stream biological integrity</h1>'), 
+  h1(HTML('<h1><b>SCAPE</b>: <b>S</b>tream <b>C</b>lassification <b>A</b>nd <b>P</b>riority <b>E</b>xplorer</h1>'), 
      style = "font-family: 'Volkhov';
      font-weight: 500; line-height: 1.1"),
   
   fluidRow(
     
-    column(width = 12, 
-           h4('Created by Marcus W. Beck,', a('marcusb@sccwrp.org', href = 'mailto:marcusb@sccwrp.org'), ", Raphael D. Mazor,", a('raphaelm@sccwrp.org', href = 'mailto:raphaelm@sccwrp.org'))
-    ),
+    column(width = 3, img(src = "logo2.jpg", width = '450px'), align = 'center', style = "margin-top: 0px;")
     
-    column(width = 3, img(src = "sccwrp_logo.jpg", width = '150px'), align = 'center', style = "margin-top: 0px;"),
-    
-    column(width = 9, 
-           h5(HTML('This application can be used to explore landscape constraints on biological integrity of streams.  The application provides context for evaluating stream health by estimating an expectation of biological condition at a given stream reach relative to landscape drivers. Biological condition from field data using the California Stream Condition Index can be compared to the reach expectation.  The process begins by identifying stream classifications and expectations from user-defined parameters for CSCI thresholds and confidence in the biological expectation. Stream classifications of expected biological constraints are defined as likely unconstrained, possibly unconstrained, possibly constrained, and likely constrained.  Observed CSCI scores at a site are then characterized relative to the reach expectations as over-scoring, expected, or under-scoring.  Relative site scores given the expectation can be used to recommend priorities for management actions. View source <a href="https://github.com/SCCWRP/SGRRMP">here</a>. Last updated:'), dt)
-    ), 
-    
-    column(width = 4, 
-           selectInput('shd',
-                       label = h6("Select watershed:"), 
-                       choices = shds, 
-                       selected = shds[2]
-           )
-    )
+    # column(width = 4, 
+    #        selectInput('shd',
+    #                    label = h6("Select watershed:"), 
+    #                    choices = shds, 
+    #                    selected = shds[2]
+    #        )
+    # )
     
   ),
   
+  HTML('<br></br>'),
+  
   # master widgets    
   column(width = 12, 
-         
-         h4('Controlling the app:'),
-         
-         h5('These controls determine how stream expectations and relative site scores are evaluated. The first slider controls the CSCI threshold and the second slider controls the certainty range of the expected CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and the relative CSCI score at a station (see step 2). The third switch determines if results are averaged for each site across all visits, or if results for all visits are shown.  Turning the switch to the right will jitter repeat visits on the maps and all tabular summaries (step 4 and 5) will consider each visit as a unique event.'),
+
          
          # select CSCI threshold, master
          column(width = 4,    
@@ -104,7 +94,77 @@ shinyUI(fluidPage(
          
   ),
   
-  tabsetPanel(id = 'alltabs', 
+  tabsetPanel(id = 'alltabs', type = 'pills', 
+              
+              tabPanel('Instructions',
+                       
+                       tabsetPanel(#type = 'pills',
+                       
+                                   tabPanel('Overview',
+                       
+                                     column(width = 12, 
+                                            
+                                            h5(HTML(' View source <a href="https://github.com/SCCWRP/SGRRMP">here</a>. Last updated:'), dt),
+                                            
+                                            h5('The SCAPE application can be used to explore landscape constraints on biological integrity of streams.  The application provides context for evaluating stream health by estimating an expectation of biological condition at a given stream reach relative to landscape drivers. Biological condition from field data using the California Stream Condition Index can be compared to the reach expectation.  The process begins by identifying stream classifications and expectations from user-defined parameters for CSCI thresholds and confidence in the biological expectation. Stream classifications of expected biological constraints are defined as likely unconstrained, possibly unconstrained, possibly constrained, and likely constrained.  Observed CSCI scores at a site are then characterized relative to the reach expectations as over-scoring, expected, or under-scoring.  Relative site scores given the expectation can be used to recommend priorities for management actions.')
+                                            
+                                      )
+                                     
+                                     ),
+                                   
+                                   tabPanel('Controlling the app',
+                                     
+                                     column(width = 12, 
+                                            
+                                            h5(HTML('Changing the master controls at the top will propogate changes to each map, figure, and table. These controls determine how stream expectations and relative site scores are evaluated by SCAPE. The first slider controls the <b>CSCI reference threshold</b> and the second slider controls the <b>certainty range</b> of the expected CSCI scores at each stream reach. Overlap of the certainty range with the CSCI threshold determines the expectation of a reach and the relative CSCI score at a station (see step 2). The third switch determines if results are averaged for each site across all visits, or if <b>individual samples</b> for repeat visits to the same site are shown.  Turning the switch to the right will jitter repeat visits on the maps and all tabular summaries (step 4 and 5) will consider each visit as a unique event.')),
+                                            
+                                            h5('Follow these steps to use SCAPE:'),
+                                            
+                                            h5(HTML('<b>(1) View maps</b> that show stream reach classifications and CSCI scores at monitoring stations.')),
+                                            
+                                            h5(HTML('<b>(2) View reach summary</b> of CSCI score expectations for every stream reach with CSCI sampling stations.')), 
+                                            
+                                            h5(HTML('<b>(3) Tabulate reach summary</b> of CSCI score expectations for every stream reach with CSCI sampling stations.')), 
+                                            
+                                            h5(HTML('<b>(4) Set reach priority</b> to identify potential management actions for each site type. ')), 
+                                            
+                                            h5(HTML('<b>(5) View priorities</b> by location of recommended actions defined for each site type.'))
+                                            
+                                            )
+                                   ), 
+                                   
+                                   tabPanel('Definitions',
+                       
+                                     column(width = 12, 
+                                            
+                                            h5(HTML('<b>Classification</b>: Determining which streams are likely to be constrained and predicting the range of likely scores within those constraints.')),
+                                            
+                                            h5(HTML('<b>Constrained</b>: The lack of potential for a stream to support good biological condition. This is based on a defined expectation and does not mean a stream cannot be fully restored or further degraded.')),
+                                            
+                                            h5(HTML('<b>CSCI</b>: The California Stream Condition Index as a measure of stream biological integrity.  CSCI scores of 0.63, 0.79, and 0.83 are nominal descriptions of potential biological objectives that can be used to classify and prioritize.')),
+                                            
+                                            h5(HTML('<b>Expected score</b>: A CSCI score from SCAPE, usually reported as a range of low to high expectations or as the median or most likely score.')),
+                                            
+                                            h5(HTML('<b>Investigate</b>: Additional monitoring or review of supplementary data (e.g., aerial imagery).')),
+                                            
+                                            h5(HTML('<b>Management priority</b>: A priority recommended by the user to investigate, protect, and/or restore a reach type.  These are actions in addition to baseline maintanence and monitoring that occurs at all sites.')),
+                                            
+                                            h5(HTML('<b>Observed score</b>: A CSCI score using field observations.')),
+                                            
+                                            h5(HTML('<b>Prioritization</b>: Identifying where certain types of management should occur.')),
+                                            
+                                            h5(HTML('<b>Protect</b>: Additional scrutiny of proposed development and/or projects.')),
+                                            
+                                            h5(HTML('<b>Relative score</b>: Difference of the observed CSCI score from the expected.  Used to define a site as over scoring, expected, or under scoring.')),
+                                               
+                                            h5(HTML('<b>Restore</b>: Targeted action for causal assessment and/or restoration funds.')), 
+                                            
+                                            h5(HTML('<b>Type</b>: An additional site description based on the relative CSCI score, the stream, and location to the selected CSCI reference threshold.'))                                            
+                                            
+                                            )
+                                   )
+                       )
+              ),
               
               tabPanel('(1) View maps',
                        
@@ -332,7 +392,7 @@ shinyUI(fluidPage(
               
               tabPanel('(5) View priorities',
                        
-                       h5("These maps show the location of recommended priority actions defind for each site type in step 4. Each site can have more than one priority."),
+                       h5("These maps show the location of recommended priority actions defined for each site type in step 4. Each site can have more than one priority."),
                        
                        # investigate map
                        column(width = 4,

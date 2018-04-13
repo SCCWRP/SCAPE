@@ -1,3 +1,16 @@
+# remove mouse coordinates from mapview, input must be a leaflet object
+removeMouseCoordinates = function(map) {
+
+  rc = map$jsHooks$render
+  rc_lnlt = lapply(rc, grep, pattern = "lnlt")
+  for (i in seq_along(map$jsHooks$render)) {
+    map$jsHooks$render[[i]][rc_lnlt[[i]]] = NULL
+  }
+  
+  return(map)
+}
+
+
 ######
 # get legend from an existing ggplot object
 g_legend <- function(a.gplot){
@@ -584,7 +597,7 @@ get_pri_inp <- function(input, plot_ex, scr_exp_map){
   # site classications
   scr_exp_map <- scr_exp_map %>%
     mutate(typelv = as.character(typelv))
-  
+
   # format site priorities from input
   scr_pri <- sapply(paste('Site', 1:16), function(x) input[[x]])
   scr_pri[unlist(map(scr_pri, is.null))] <- ''
