@@ -1,3 +1,3 @@
 # README
 
-Materials for scaling stream classification and prioritization app
+Materials for SCAPE: stream classification and priority explorer
