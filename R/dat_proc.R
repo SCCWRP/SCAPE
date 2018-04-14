@@ -72,7 +72,8 @@ for(shd in shds){
   
   # csci scores
   scrs_tmp <- scrs %>% 
-    filter(COMID %in% spat_tmp$COMID)
+    filter(COMID %in% spat_tmp$COMID) %>% 
+    unique
   
   # assign unique names to scrs and spat
   scrs_shd <- paste0('scrs_', shd)

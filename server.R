@@ -21,6 +21,24 @@ pal_exp <- colorFactor(
   na.color = 'yellow',
   levels = c('likely unconstrained', 'possibly unconstrained', 'possibly constrained', 'likely constrained'))
 
+# icons for map, created externally
+crsz <- 11
+trsz <- 15
+mapicons <- iconList(
+  `over scoring (lu)` = makeIcon("www/overlu.png", trsz, trsz),
+  `expected (lu)` = makeIcon("www/explu.png", crsz, crsz),
+  `under scoring (lu)`= makeIcon("www/underlu.png", trsz, trsz),
+  `over scoring (pu)` = makeIcon("www/overpu.png", trsz, trsz),
+  `expected (pu)` = makeIcon("www/exppu.png", crsz, crsz),
+  `under scoring (pu)`= makeIcon("www/underpu.png", trsz, trsz),
+  `over scoring (pc)` = makeIcon("www/overpc.png", trsz, trsz),
+  `expected (pc)` = makeIcon("www/exppc.png", crsz, crsz),
+  `under coring (pc)`= makeIcon("www/underpc.png", trsz, trsz),
+  `over scoring (lc)` = makeIcon("www/overlc.png", trsz, trsz),
+  `expected (lc)` = makeIcon("www/explc.png", crsz, crsz),
+  `under scoring (lc)`= makeIcon("www/underlc.png", trsz, trsz)
+)
+
 sts <- paste('Site', seq(1:16))
 
 # color palette for CSCI scoring performance
@@ -66,28 +84,34 @@ exps_ex <- data.frame(
   stringsAsFactors = F
 ) 
 
-shd <- 'San Gabriel'
+# have to reassign sgr data for reactives
+data(scrs)
+scrs_tmp <- scrs
+data(spat)
+spat_tmp <- spat
 
 # server logic
 server <- function(input, output, session) {
   
   # spatial polylines from watershed selection
   spat <- reactive({
-    
-    # shd <- input$shd
-    spat <- paste0('spat_', shd)
-    load(file = paste0('data/', spat, '.RData'))
-    get(spat)
+
+    # # shd <- input$shd
+    # spat <- paste0('spat_', shd)
+    # load(file = paste0('data/', spat, '.RData'))
+    # get(spat)
+    na.omit(spat_tmp)
     
   })
   
   # csci scores from watershed selection
   scrs <- reactive({
     
-    # shd <- input$shd
-    scrs <- paste0('scrs_', shd)
-    load(file = paste0('data/', scrs, '.RData'))
-    get(scrs)
+    # # shd <- input$shd
+    # scrs <- paste0('scrs_', shd)
+    # load(file = paste0('data/', scrs, '.RData'))
+    # get(scrs)
+    na.omit(scrs_tmp)
     
   })
   
@@ -198,7 +222,8 @@ server <- function(input, output, session) {
   plot_ex <- reactive({
     
     # output
-    out <- proc_all(exps_ex, scrs_ex, thrsh = 0.79, tails = 0.05)
+    out <- proc_all(exps_ex, scrs_ex, thrsh = 0.79, tails = 0.05) %>% 
+      mutate(perf = factor(perf, levels = rev(levels(perf))))
     
     out
     
@@ -356,13 +381,16 @@ server <- function(input, output, session) {
     toplo1 <- scr_exp_map() %>%
       select(COMID, StationCode, datcut, strcls, csci, perf, typelv, perf_mlt) %>%
       unnest %>%
-      mutate(strcls = factor(strcls, levels = rev(levels(strcls)))) %>%
+      mutate(
+        strcls = factor(strcls, levels = rev(levels(strcls))),
+        perf = factor(perf, levels = rev(levels(perf)))
+        ) %>%
       rename(
         `Stream Class` = strcls,
         `Relative\nscore` = perf_mlt,
         Type = typelv
       )
-    
+
     # total expected range
     toplo2 <- scr_exp_map() %>%
       select(COMID, StationCode, data, strcls) %>%
@@ -413,7 +441,7 @@ server <- function(input, output, session) {
       
       # otherwise full
     } else {
-      
+
       # plot
       p <- ggplot(toplo1, aes(y = StationCode, x = val)) +
         geom_line(data = toplo2, aes(x = val, colour = `Stream Class`), alpha = 0.1, size = 2) +
@@ -426,9 +454,10 @@ server <- function(input, output, session) {
         scale_x_continuous('CSCI') +
         scale_y_discrete('Site') +
         scale_colour_manual(values = pal_exp(levels(toplo1$`Stream Class`))) +
-        geom_point(aes(x = csci, fill = `Relative\nscore`), shape = 21, size = 4, alpha = 0.8) +
+        geom_point(aes(x = csci, fill = `Stream Class`, shape = perf), size = 4, alpha = 0.8) +
         geom_vline(xintercept = thrsh(), linetype = 'dashed', size = 1) +
-        scale_fill_manual(values = pal_prf(levels(toplo1$`Relative\nscore`)), na.value = 'yellow')
+        scale_fill_manual(values = pal_exp(levels(toplo1$`Stream Class`)), na.value = 'yellow', guide = F) + 
+        scale_shape_manual('Relative site score', values = c(24, 21, 25))
       
     }
     
@@ -464,12 +493,14 @@ server <- function(input, output, session) {
     p <- ggplot(plot_ex(), aes(x = typelv)) +
       geom_errorbar(aes(ymin = minv, ymax = maxv, colour = `Stream class`), width = 0, size = 2, alpha = 0.2) +
       geom_errorbar(aes(ymin = minv_qt, ymax = maxv_qt, colour = `Stream class`), width = 0, size = 2, alpha = 0.7) +
-      geom_point(aes(y  = `CSCI score`, fill = `Relative\nscore`), shape = 21, size = 7, alpha = 0.8) +
+      geom_point(aes(y  = `CSCI score`, fill = `Stream class`, shape = perf), size = 7, alpha = 0.8) +
       geom_hline(yintercept = 0.79, linetype = 'dashed') +
       scale_colour_manual(values = pal_exp(levels(plot_ex()$`Stream class`)),
                           guide = guide_legend(direction = 'vertical', title.position = 'left')) +
-      scale_fill_manual(values = pal_prf(levels(plot_ex()$`Relative\nscore`)),
-                        guide = guide_legend(ncol = 4, direction = 'vertical', title.position = 'left')) +
+      scale_fill_manual(values = pal_exp(levels(plot_ex()$`Stream class`)),
+                        guide = F) +
+      scale_shape_manual('Relative site score', values = c(24, 21, 25), 
+                         guide = guide_legend(direction = 'veritical', title.position = 'left')) +
       scale_x_discrete(limits = rev(levels(plot_ex()$typelv))) +
       mythm +
       coord_flip()
@@ -536,7 +567,7 @@ server <- function(input, output, session) {
     if(difr){
       
       exp_med <- exp_med %>%
-        addCircleMarkers(data = csci(), lng = ~long, lat = ~lat, radius = ptsz, weight = 0.9, fillOpacity = 0.8,
+        addCircleMarkers(data = csci(), lng = ~long, lat = ~lat, radius = ptsz, weight = 1, fillOpacity = 1,
                          label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci_difr, 2))),
                          fillColor = ~pal_difr()(csci_difr), color = 'black'
         ) %>%
@@ -548,7 +579,7 @@ server <- function(input, output, session) {
     } else {
       
       exp_med <- exp_med %>%
-        addCircleMarkers(data = csci(), lng = ~long, lat = ~lat, radius = ptsz, weight = 0.9, fillOpacity = 0.8,
+        addCircleMarkers(data = csci(), lng = ~long, lat = ~lat, radius = ptsz, weight = 1, fillOpacity = 1,
                          label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2))),
                          fillColor = ~pal()(csci), color = 'black'
         ) %>%
@@ -571,17 +602,11 @@ server <- function(input, output, session) {
       addPolylines(opacity = 1, weight = lnsz, color = ~pal_exp(strcls),
                    label = ~paste0(COMID, ', Stream class:', strcls)
       ) %>%
-      addCircleMarkers(data = scr_exp_map, lng = ~long, lat = ~lat, radius = ptsz, weight = 0.9, fillOpacity = 0.9,
-                       label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt),
-                       fillColor = ~pal_prf(perf_mlt), color = 'black'
-      ) %>%
-      addLegend("topright", pal = pal_prf, values = scr_exp_map$perf_mlt,
-                title = "Relative CSCI (points)",
-                opacity = 1, na.label = "not in StreamCat"
+      addMarkers(data = scr_exp_map, lng = ~long, lat = ~lat,
+                 label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt),
+                 icon = ~mapicons[perf_mlt]
+                 
       )
-    
-    # sync the maps
-    combineWidgets(exp_med, exp_cls)
     
   })
   
@@ -642,13 +667,10 @@ server <- function(input, output, session) {
     if(length(dat_pro) > 0){
       
       pri_pro <- pri_pro %>% 
-        addCircleMarkers(data = dat_pro[[1]], lng = ~long, lat = ~lat, radius = ptsz, weight = 0.9, fillOpacity = 0.9,
-                         label = ~paste0(StationCode, ', CSCI: ', round(csci, 2), ', ', perf_mlt, ', ', typelv),
-                         fillColor = ~pal_typ(typelv), color = 'black'
-        ) %>% 
-        addLegend("topright", pal = pal_typ, values = dat_pro[[1]]$typelv,
-                  title = "Site type (points)",
-                  opacity = 1
+        addMarkers(data = dat_pro[[1]], lng = ~long, lat = ~lat,
+                   label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt, ', ', typelv),
+                   icon = ~mapicons[perf_mlt]
+                   
         )
       
     }
@@ -657,33 +679,25 @@ server <- function(input, output, session) {
     if(length(dat_inv) > 0){
       
       pri_inv <- pri_inv %>% 
-        addCircleMarkers(data = dat_inv[[1]], lng = ~long, lat = ~lat, radius = ptsz, weight = 0.9, fillOpacity = 0.9,
-                         label = ~paste0(StationCode, ', CSCI: ', round(csci, 2), ', ', perf_mlt, ', ', typelv),
-                         fillColor = ~pal_typ(typelv), color = 'black'
-        ) %>% 
-        addLegend("topright", pal = pal_typ, values = dat_inv[[1]]$typelv,
-                  title = "Site type (points)",
-                  opacity = 1
+        addMarkers(data = dat_inv[[1]], lng = ~long, lat = ~lat,
+                   label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt, ', ', typelv),
+                   icon = ~mapicons[perf_mlt]
+                   
         )
-      
+        
     }
     
     # add restore points if not empty
     if(length(dat_res) > 0){
       
       pri_res <- pri_res %>% 
-        addCircleMarkers(data = dat_res[[1]], lng = ~long, lat = ~lat, radius = ptsz, weight = 0.9, fillOpacity = 0.9,
-                         label = ~paste0(StationCode, ', CSCI: ', round(csci, 2), ', ', perf_mlt, ', ', typelv),
-                         fillColor = ~pal_typ(typelv), color = 'black'
-        ) %>% 
-        addLegend("topright", pal = pal_typ, values = dat_res[[1]]$typelv,
-                  title = "Site type (points)",
-                  opacity = 1
-        )
+        addMarkers(data = dat_res[[1]], lng = ~long, lat = ~lat,
+                   label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt, ', ', typelv),
+                   icon = ~mapicons[perf_mlt]
+                   
+        ) 
+      
     }
-    
-    # sync the maps
-    combineWidgets(pri_pro, pri_inv, pri_res)
     
   })
   

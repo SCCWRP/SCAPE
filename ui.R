@@ -9,12 +9,6 @@ library(tidyverse)
 library(mapview)
 library(rvest)
 
-# last commit date
-dt <- read_html('https://github.com/SCCWRP/SCAPE/commits/master') %>% 
-  html_nodes(".commit-group-title") %>% 
-  html_text %>% 
-  .[1] %>% 
-  gsub('^.*Commits on (.*)\\n.*$', '\\1', .)
 # # watersheds to select from data folder
 # shds <- list.files('data') %>% 
 #   gsub('\\.RData$|^scrs_|^spat_', '', .) %>% 
@@ -104,10 +98,12 @@ shinyUI(fluidPage(
                        
                                      column(width = 12, 
                                             
-                                            h5(HTML(' View source <a href="https://github.com/SCCWRP/SGRRMP">here</a>. Last updated:'), dt),
+                                            h5('The SCAPE application can be used to explore landscape constraints on biological integrity of streams.  The application provides context for evaluating stream health by estimating an expectation of biological condition at a given stream reach relative to landscape drivers. Biological condition from field data using the California Stream Condition Index can be compared to the reach expectation.  The process begins by identifying stream classifications and expectations from user-defined parameters for CSCI thresholds and confidence in the biological expectation. Stream classifications of expected biological constraints are defined as likely unconstrained, possibly unconstrained, possibly constrained, and likely constrained.  Observed CSCI scores at a site are then characterized relative to the reach expectations as over-scoring, expected, or under-scoring.  Relative site scores given the expectation can be used to recommend priorities for management actions.'),
                                             
-                                            h5('The SCAPE application can be used to explore landscape constraints on biological integrity of streams.  The application provides context for evaluating stream health by estimating an expectation of biological condition at a given stream reach relative to landscape drivers. Biological condition from field data using the California Stream Condition Index can be compared to the reach expectation.  The process begins by identifying stream classifications and expectations from user-defined parameters for CSCI thresholds and confidence in the biological expectation. Stream classifications of expected biological constraints are defined as likely unconstrained, possibly unconstrained, possibly constrained, and likely constrained.  Observed CSCI scores at a site are then characterized relative to the reach expectations as over-scoring, expected, or under-scoring.  Relative site scores given the expectation can be used to recommend priorities for management actions.')
+                                            h5(HTML('Please concact <a href="mailto:marcusb@sccwrp.org">marcusb@sccwrp.org</a> with comments or questions.')),
                                             
+                                            h5(HTML('Click here for source, version, and citation info: <a href="https://zenodo.org/badge/latestdoi/121531761"><img src="https://zenodo.org/badge/121531761.svg" alt="DOI"></a>'))
+                                       
                                       )
                                      
                                      ),
@@ -139,7 +135,7 @@ shinyUI(fluidPage(
                                             
                                             h5(HTML('<b>Classification</b>: Determining which streams are likely to be constrained and predicting the range of likely scores within those constraints.')),
                                             
-                                            h5(HTML('<b>Constrained</b>: The lack of potential for a stream to support good biological condition. This is based on a defined expectation and does not mean a stream cannot be fully restored or further degraded.')),
+                                            h5(HTML('<b>Constrained</b>: The lack of potential for a stream to have biological integrity given landscape information. This is based on a defined expectation and does not mean a stream cannot be fully restored or further degraded.')),
                                             
                                             h5(HTML('<b>CSCI</b>: The California Stream Condition Index as a measure of stream biological integrity.  CSCI scores of 0.63, 0.79, and 0.83 are nominal descriptions of potential biological objectives that can be used to classify and prioritize.')),
                                             
@@ -155,7 +151,7 @@ shinyUI(fluidPage(
                                             
                                             h5(HTML('<b>Protect</b>: Additional scrutiny of proposed development and/or projects.')),
                                             
-                                            h5(HTML('<b>Relative score</b>: Difference of the observed CSCI score from the expected.  Used to define a site as over scoring, expected, or under scoring.')),
+                                            h5(HTML('<b>Relative score</b>: Difference of the observed CSCI score from the expected.  Used to define a site as over scoring (up triangle), expected (circle), or under scoring (down triangle).')),
                                                
                                             h5(HTML('<b>Restore</b>: Targeted action for causal assessment and/or restoration funds.')), 
                                             
@@ -168,7 +164,7 @@ shinyUI(fluidPage(
               
               tabPanel('(1) View maps',
                        
-                       h5('These maps show stream reach classifications and CSCI scores at monitoring stations.  The', strong('left map'), 'shows the predicted median CSCI score for a reach and observed CSCI score at a station from field data.  The', strong('right map'), 'shows the CSCI score expectation for a reach and the relative CSCI score at a station for the expectation. See the plot tab (step 2) for more details on how expectations and relative site scores are determined. The toggle switch controls how the CSCI scores at the stations (points) on the left map are displayed.  The observed scores from field samples are shown when the switch is off and the differences between the observed scores and the stream reach median expectations are shown when the switch is on.'),
+                       h5(HTML('These maps show stream reach classifications and CSCI scores at monitoring stations.  The <b>left map</b> shows the predicted median CSCI score for a reach and observed CSCI score at a station from field data.  The <b>right map</b> shows the CSCI score expectation for a reach and the relative CSCI score at a station for the expectation (over scoring as <b>up triangle</b>, expected as <b>circle</b>, under scoring as <b>down triangle</b>). See the plot tab (step 2) for more details on how expectations and relative site scores are determined. The toggle switch controls how the CSCI scores at the stations (points) on the left map are displayed.  The observed scores from field samples are shown when the switch is off and the differences between the observed scores and the stream reach median expectations are shown when the switch is on.')),
                        
                        # show csci differences   
                        materialSwitch('difr', 
