@@ -57,7 +57,7 @@ shinyUI(fluidPage(
                   grid = FALSE,
                   force_edges = TRUE,
                   selected = '10% (0.79)',
-                  choices = c('1% (0.63)', '10% (0.79)', '30% (0.89)'),
+                  choices = c('1% (0.63)', '10% (0.79)', '30% (0.92)'),
                   width = '400px'
                 )
          ),
