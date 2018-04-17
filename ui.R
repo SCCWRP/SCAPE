@@ -242,7 +242,7 @@ shinyUI(fluidPage(
               
               tabPanel('(4) Set reach priorities',
                        
-                       h5('This plot can be used to identify potential management actions for each site type.  The plot on the right shows a graphical depiction of the types in the able in step 3.  Priorities for each type can be selected from none to many using the drop-down menus for each type on the left.  These priorities can then be viewed with the maps in step 5.'),
+                       h5('This plot can be used to identify potential management actions for each site type.  The plot on the right shows a graphical depiction of the types in the table in step 3.  Priorities for each type can be selected from none to many using the drop-down menus for each type on the left.  These priorities can then be viewed with the maps in step 5.'),
                        
                        h5('The default priorities were based on recommendations from a stakeholder group with familiarity of the watershed.  The priorities are generalized into three categories to recommend actions in addition to baseline monitoring and maintenance:'),
                        
