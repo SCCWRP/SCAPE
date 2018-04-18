@@ -102,7 +102,7 @@ shinyUI(fluidPage(
                                             
                                             h5(HTML('Models describing landscape constraints on biological integrity were created using data from <a href="https://www.epa.gov/national-aquatic-resource-surveys/streamcat">StreamCat</a>.  This dataset is a national product describing, among other characteristics, watershed development for all stream reaches used to develop SCAPE models.  More details about this dataset can be found in <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/1752-1688.12372">Hill et al. 2015</a>.')),
                                             
-                                            h5(HTML('Please concact <a href="mailto:marcusb@sccwrp.org">marcusb@sccwrp.org</a> with comments or questions. Click here for source, version, and citation info: <a href="https://zenodo.org/badge/latestdoi/121531761"><img src="https://zenodo.org/badge/121531761.svg" alt="DOI"></a>'))
+                                            h5(HTML('Please contact <a href="mailto:marcusb@sccwrp.org">marcusb@sccwrp.org</a> with comments or questions. Click here for source, version, and citation info: <a href="https://zenodo.org/badge/latestdoi/121531761"><img src="https://zenodo.org/badge/121531761.svg" alt="DOI"></a>'))
                                             
                                       )
                                      
