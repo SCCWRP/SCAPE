@@ -33,7 +33,7 @@ mapicons <- iconList(
   `under scoring (pu)`= makeIcon("www/underpu.png", trsz, trsz),
   `over scoring (pc)` = makeIcon("www/overpc.png", trsz, trsz),
   `expected (pc)` = makeIcon("www/exppc.png", crsz, crsz),
-  `under coring (pc)`= makeIcon("www/underpc.png", trsz, trsz),
+  `under scoring (pc)`= makeIcon("www/underpc.png", trsz, trsz),
   `over scoring (lc)` = makeIcon("www/overlc.png", trsz, trsz),
   `expected (lc)` = makeIcon("www/explc.png", crsz, crsz),
   `under scoring (lc)`= makeIcon("www/underlc.png", trsz, trsz)
