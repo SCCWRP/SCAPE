@@ -31,7 +31,7 @@ shinyUI(fluidPage(
   
   fluidRow(
     
-    column(width = 3, img(src = "logo2.jpg", width = '450px'), align = 'center', style = "margin-top: 0px;")
+    column(width = 4, img(src = "logo2.jpg", width = '600px'), align = 'center', style = "margin-top: 0px;")
     
     # column(width = 4, 
     #        selectInput('shd',
