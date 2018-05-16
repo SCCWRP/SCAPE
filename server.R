@@ -93,6 +93,8 @@ spat_tmp <- spat
 # server logic
 server <- function(input, output, session) {
   
+  session$allowReconnect(TRUE)
+  
   # spatial polylines from watershed selection
   spat <- reactive({
 
