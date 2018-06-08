@@ -23,6 +23,7 @@ shinyUI(fluidPage(
   theme = 'styles.css',
   useShinyjs(),
   useShinyCustom(slider_delay = '1500'),
+  tags$head(includeScript('google-analytics.js')),
   
   # Application title
   h1(HTML('<h1><b>SCAPE</b>: <b>S</b>tream <b>C</b>lassification <b>A</b>nd <b>P</b>riority <b>E</b>xplorer</h1>'), 
