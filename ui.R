@@ -32,8 +32,22 @@ shinyUI(fluidPage(
   
   fluidRow(
     
-    column(width = 4, img(src = "logo2.jpg", width = '600px'), align = 'center', style = "margin-top: 0px;")
-    
+    column(width = 12,
+  
+      a(href = 'http://sccwrp.org/Homepage.aspx',
+        img(src = "sccwrp_logo.jpg", height = '120px', align = 'left', style = "margin-right: 20px; ")
+        ),
+      
+      a(href = 'http://sgrrmp.org/',
+        img(src = "SGRRMP Logo.png", height = '120px', align = 'left', style = "margin-right: 25px;")
+        ),
+      
+      a(href = 'https://www.waterboards.ca.gov/water_issues/programs/swamp/',  
+        img(src = "SWAMP_Logo_RGB.jPG", height= '120px', align = 'left', style = "margin-right: 20px;")
+      )
+           
+    )
+  
     # column(width = 4, 
     #        selectInput('shd',
     #                    label = h6("Select watershed:"), 
@@ -44,7 +58,8 @@ shinyUI(fluidPage(
     
   ),
   
-  HTML('<br></br>'),
+  HTML('<br><br>'),
+  # HTML('<br><br>'),
   
   # master widgets    
   column(width = 12, 
