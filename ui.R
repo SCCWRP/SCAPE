@@ -33,18 +33,18 @@ shinyUI(fluidPage(
   fluidRow(
     
     column(width = 12,
-  
-      a(href = 'http://sccwrp.org/Homepage.aspx',
-        img(src = "sccwrp_logo.jpg", height = '120px', align = 'left', style = "margin-right: 20px; ")
-        ),
-      
-      a(href = 'http://sgrrmp.org/',
-        img(src = "SGRRMP Logo.png", height = '120px', align = 'left', style = "margin-right: 25px;")
-        ),
-      
-      a(href = 'https://www.waterboards.ca.gov/water_issues/programs/swamp/',  
-        img(src = "SWAMP_Logo_RGB.jPG", height= '120px', align = 'left', style = "margin-right: 20px;")
-      )
+           
+           a(href = 'http://sccwrp.org/Homepage.aspx', target = '_blank',
+             img(src = "sccwrp_logo.jpg", height = '120px', align = 'left', style = "margin-right: 20px; ")
+           ),
+           
+           a(href = 'http://sgrrmp.org/', target = '_blank',
+             img(src = "SGRRMP Logo.png", height = '120px', align = 'left', style = "margin-right: 25px;")
+           ),
+           
+           a(href = 'https://www.waterboards.ca.gov/water_issues/programs/swamp/', target = '_blank', 
+             img(src = "SWAMP_Logo_RGB.JPG", height= '120px', align = 'left', style = "margin-right: 20px;")
+           )
            
     )
   
@@ -59,7 +59,6 @@ shinyUI(fluidPage(
   ),
   
   HTML('<br><br>'),
-  # HTML('<br><br>'),
   
   # master widgets    
   column(width = 12, 
