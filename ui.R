@@ -85,6 +85,7 @@ shinyUI(fluidPage(
                   grid = FALSE, 
                   force_edges = TRUE,
                   choices = c('More certain (0.45)', '0.40', '0.35', '0.30', '0.25', '0.20', '0.15', '0.10', 'Less certain (0.05)'), 
+                  selected = '0.40',
                   width = '400px'
                 )
          ), 

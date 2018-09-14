@@ -96,10 +96,6 @@ server <- function(input, output, session) {
   # spatial polylines from watershed selection
   spat <- reactive({
 
-    # # shd <- input$shd
-    # spat <- paste0('spat_', shd)
-    # load(file = paste0('data/', spat, '.RData'))
-    # get(spat)
     na.omit(spat_tmp)
     
   })
@@ -107,10 +103,6 @@ server <- function(input, output, session) {
   # csci scores from watershed selection
   scrs <- reactive({
     
-    # # shd <- input$shd
-    # scrs <- paste0('scrs_', shd)
-    # load(file = paste0('data/', scrs, '.RData'))
-    # get(scrs)
     na.omit(scrs_tmp)
     
   })
@@ -208,7 +200,7 @@ server <- function(input, output, session) {
   dat_exp <- reactive({
     
     # get biological condition expectations
-    cls <- getcls2(spat(), thrsh = thrsh(), tails = tlinp(), modls = 'full')
+    cls <- getcls2(spat(), thrsh = thrsh(), tails = tlinp(), modls = 'core')
     
     # join with spatial data
     out <- spat() %>% 
@@ -243,21 +235,22 @@ server <- function(input, output, session) {
     
     # jitter scores with overlapping lat/lon
     if(jitr){
-      
+
       out <- out %>% 
         mutate(
           lat = ifelse(duplicated(lat), jitter(lat, factor = 300), lat),
           long = ifelse(duplicated(long), jitter(long, factor = 300), long)
         )
       
-      # take average csci is jitter is zero
+    # take average csci if jitter is zero
     } else {
-      
+
       out <- out %>% 
         group_by(COMID, StationCode, lat, long) %>% 
         summarise(
           csci = mean(csci, na.rm = TRUE), 
-          csci_difr = mean(csci_difr, na.rm = TRUE)
+          csci_difr = mean(csci_difr, na.rm = TRUE), 
+          SampleDate = ifelse(length(SampleDate) > 1, 'multiple dates', as.character(SampleDate))
         ) %>% 
         ungroup
       
@@ -271,14 +264,14 @@ server <- function(input, output, session) {
   scr_exp_map <- reactive({
     
     # process
-    incl <- site_exp(spat(), csci(), thrsh = thrsh(), tails = tlinp(), modls = 'full') %>% 
+    incl <- site_exp(spat(), csci(), thrsh = thrsh(), tails = tlinp(), modls = 'core') %>% 
       select(-lat, -long) %>% 
       group_by(StationCode) %>% 
       nest
     
     # assign csci station locations for jittr
     out <- csci() %>% 
-      select(StationCode, lat, long) %>% 
+      select(StationCode, lat, long, SampleDate) %>% 
       group_by(StationCode) %>% 
       nest %>% 
       mutate(StationCode = factor(StationCode, levels = levels(incl$StationCode))) %>% 
@@ -297,7 +290,7 @@ server <- function(input, output, session) {
   scr_exp <- reactive({
     
     # process
-    incl <- site_exp(spat(), scrs(), thrsh = thrsh(), tails = tlinp(), modls = 'full')
+    incl <- site_exp(spat(), scrs(), thrsh = thrsh(), tails = tlinp(), modls = 'core')
     
     # add additional perf column for multicolor by strcls (pal_prf)
     out <- get_perf_mlt(incl)
@@ -439,7 +432,7 @@ server <- function(input, output, session) {
         geom_point(aes(x = csci), fill = 'white', shape = 21, size = 4, alpha = 0.8) +
         geom_vline(xintercept = thrsh(), linetype = 'dashed', size = 1)
       
-      # otherwise full
+    # otherwise full
     } else {
 
       # plot
@@ -549,7 +542,7 @@ server <- function(input, output, session) {
     dat <- dat()
     dat_exp <- dat_exp()
     scr_exp_map <- scr_exp_map()
-    
+
     # score expectations
     exp_med <- leafletProxy("map_med", data = dat) %>%
       clearMarkers() %>%
@@ -568,7 +561,7 @@ server <- function(input, output, session) {
       
       exp_med <- exp_med %>%
         addCircleMarkers(data = csci(), lng = ~long, lat = ~lat, radius = ptsz, weight = 1, fillOpacity = 1,
-                         label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci_difr, 2))),
+                         label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci_difr, 2)), ' (', SampleDate, ')'),
                          fillColor = ~pal_difr()(csci_difr), color = 'black'
         ) %>%
         addLegend("topright", pal = pal_difr(), values = csci()$csci_difr,
@@ -580,7 +573,7 @@ server <- function(input, output, session) {
       
       exp_med <- exp_med %>%
         addCircleMarkers(data = csci(), lng = ~long, lat = ~lat, radius = ptsz, weight = 1, fillOpacity = 1,
-                         label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2))),
+                         label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ' (', SampleDate, ')'),
                          fillColor = ~pal()(csci), color = 'black'
         ) %>%
         addLegend("topright", pal = pal(), values = csci()$csci,
