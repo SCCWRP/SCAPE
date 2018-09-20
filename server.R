@@ -84,11 +84,11 @@ exps_ex <- data.frame(
   stringsAsFactors = F
 ) 
 
-# have to reassign sgr data for reactives
-data(scrs)
-scrs_tmp <- scrs
-data(spat)
-spat_tmp <- spat
+# # have to reassign sgr data for reactives
+# data(scrs)
+# scrs_tmp <- scrs
+# data(spat)
+# spat_tmp <- spat
 
 # server logic
 server <- function(input, output, session) {
@@ -96,16 +96,25 @@ server <- function(input, output, session) {
   # spatial polylines from watershed selection
   spat <- reactive({
 
-    na.omit(spat_tmp)
+    # na.omit(spat_tmp)
+    shd <- input$shd
+    spat <- paste0('spat_', shd)
+    load(file = paste0('data/', spat, '.RData'))
+    get(spat)
     
   })
   
   # csci scores from watershed selection
   scrs <- reactive({
-    
-    na.omit(scrs_tmp)
+
+    # na.omit(scrs_tmp)
+    shd <- input$shd
+    scrs <- paste0('scrs_', shd)
+    load(file = paste0('data/', scrs, '.RData'))
+    get(scrs)
     
   })
+  
   
   # base mapview
   scrs_mv <- reactive({
@@ -200,7 +209,7 @@ server <- function(input, output, session) {
   dat_exp <- reactive({
     
     # get biological condition expectations
-    cls <- getcls2(spat(), thrsh = thrsh(), tails = tlinp(), modls = 'core')
+    cls <- getcls2(spat(), thrsh = thrsh(), tails = tlinp(), modls = 'full')
     
     # join with spatial data
     out <- spat() %>% 
@@ -264,7 +273,7 @@ server <- function(input, output, session) {
   scr_exp_map <- reactive({
     
     # process
-    incl <- site_exp(spat(), csci(), thrsh = thrsh(), tails = tlinp(), modls = 'core') %>% 
+    incl <- site_exp(spat(), csci(), thrsh = thrsh(), tails = tlinp(), modls = 'full') %>% 
       select(-lat, -long) %>% 
       group_by(StationCode) %>% 
       nest
@@ -290,7 +299,7 @@ server <- function(input, output, session) {
   scr_exp <- reactive({
     
     # process
-    incl <- site_exp(spat(), scrs(), thrsh = thrsh(), tails = tlinp(), modls = 'core')
+    incl <- site_exp(spat(), scrs(), thrsh = thrsh(), tails = tlinp(), modls = 'full')
     
     # add additional perf column for multicolor by strcls (pal_prf)
     out <- get_perf_mlt(incl)

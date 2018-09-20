@@ -9,10 +9,11 @@ library(tidyverse)
 library(mapview)
 library(rvest)
 
-# # watersheds to select from data folder
-# shds <- list.files('data') %>% 
-#   gsub('\\.RData$|^scrs_|^spat_', '', .) %>% 
-#   unique
+# watersheds to select from data folder
+shds <- list.files('data') %>%
+  gsub('\\.RData$|^scrs_|^spat_', '', .) %>%
+  unique
+shds <- shds[!shds %in% c('scrs', 'spat')]
 
 # column padding global
 pad <- 'padding:0px;'
@@ -46,15 +47,15 @@ shinyUI(fluidPage(
              img(src = "SWAMP_Logo_RGB.JPG", height= '120px', align = 'left', style = "margin-right: 20px;")
            )
            
-    )
+    ),
   
-    # column(width = 4, 
-    #        selectInput('shd',
-    #                    label = h6("Select watershed:"), 
-    #                    choices = shds, 
-    #                    selected = shds[2]
-    #        )
-    # )
+    column(width = 4,
+           selectInput('shd',
+                       label = h6("Select watershed:"),
+                       choices = shds,
+                       selected = shds[2]
+           )
+    )
     
   ),
   
