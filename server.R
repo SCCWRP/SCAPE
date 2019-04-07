@@ -135,7 +135,7 @@ server <- function(input, output, session) {
   
     # color domain, csci scores and expectations
     dmn <- spat() %>% 
-      select(matches('full')) %>% 
+      select(matches('core')) %>% 
       data.frame %>% 
       select(-geometry) %>% 
       gather('var', 'val') %>% 
@@ -155,7 +155,7 @@ server <- function(input, output, session) {
   pal_difr <- reactive({
   
     dmn_difr <- spat() %>% 
-      select(matches('full')) %>% 
+      select(matches('core')) %>% 
       data.frame %>% 
       select(-geometry) %>% 
       gather('var', 'val') %>% 
@@ -178,7 +178,7 @@ server <- function(input, output, session) {
     
     out <- spat()
     # change percentile column name
-    names(out)[names(out) %in% 'full0.50'] <- 'lns'
+    names(out)[names(out) %in% 'core0.50'] <- 'lns'
     
     # output
     out

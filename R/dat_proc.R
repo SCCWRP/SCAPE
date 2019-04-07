@@ -13,7 +13,7 @@ prstr <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 # flw_pth <- 'ignore/SMR_NHDPlus.shp'
 # shd_pth <- 'ignore/calwater_SWAMP3Code.shp'
-flw_pth <- 'S:/Spatial_Data/NHDPlus/NHDPlus18/Hydrography/nhdflowline.shp'
+flw_pth <- 'S:/Spatial_Data/SMCBasefiles/Frames/CompleteFrame_Flow_LU.shp'
 shd_pth <- 'S:/Spatial_Data/SMCBasefiles/Boundaries/SMCSheds/SMCSheds2009.shp'
 scr_pth <- 'ignore/csci_061917.csv'
 exp_pth <- 'ignore/comid_statewide.Rdata'
@@ -68,7 +68,7 @@ for(shd in shds){
   spat_tmp <- spat %>% 
     filter(sel[, 1]) %>% 
     left_join(comid, by = 'COMID') %>% 
-    select(COMID, matches('^full0'))
+    select(COMID, matches('^core0'))
   
   # csci scores
   scrs_tmp <- scrs %>% 
