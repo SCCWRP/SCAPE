@@ -246,6 +246,12 @@ shinyUI(fluidPage(
                        
                        h5('This table summarizes the sampling stations for the relative CSCI scores shown in the maps and plot in steps 1 and 2. The "types" are finer divisions that further categorize sites the relative score and CSCI threshold.  The types are based on relative score and location relative to the selected CSCI threshold. The types can be used to recommend priorities for management actions in step 4.'),
                        
+                       column(width = 12, 
+                              column(4, 
+                                downloadButton('dlsel', 'Download data')
+                              )
+                       ),
+                       
                        # table output
                        column(width = 12, 
                               

@@ -458,6 +458,26 @@ server <- function(input, output, session) {
     
   })
   
+  # data download
+  output$dlsel <- downloadHandler(
+    filename = function() {'all_lm_data.csv'},
+    content = function(file) {
+
+      todl <- scr_exp_map() %>%
+        select(COMID, StationCode, SampleDate, datcut, strcls, csci, perf, typelv, perf_mlt) %>%
+        unnest %>%
+        rename(
+          `Stream Class` = strcls, 
+          `Relative CSCI` = perf
+        ) %>% 
+        spread(var, val) %>% 
+        dplyr::select(-typelv, -perf_mlt)
+      
+      write.csv(todl, file, quote = T, row.names = F)
+      
+    }
+  )
+  
   # summary tables
   output$tab_sum <- DT::renderDataTable({
     
