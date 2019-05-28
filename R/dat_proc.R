@@ -2,6 +2,7 @@ library(tidyverse)
 library(sf)
 library(lubridate)
 library(rgdal)
+library(readxl)
 
 prstr <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0" 
 
@@ -18,6 +19,9 @@ shd_pth <- 'S:/Spatial_Data/SMCBasefiles/Boundaries/SMCSheds/SMCSheds2009.shp'
 scr_pth <- 'ignore/csci_061917.csv'
 exp_pth <- 'ignore/comid_statewide.Rdata'
 
+# extra SGR sites from KW
+sgr_ex <- read_excel('ignore/SGRRMP Missing SCAPE Sites CSCI Scores 05.22.2019.xlsx')
+
 # stream expectations, named comid
 load(file = exp_pth)
 
@@ -33,6 +37,23 @@ scrs <- read.csv(scr_pth, header = T, stringsAsFactors = F) %>%
     SampleDate = dmy(SampleDate), 
     COMID = as.character(COMID)
   )
+
+# add extra SGR sites to scrs
+sgr_ex <- sgr_ex %>% 
+  rename(
+    lat = Latitude, 
+    long = Longitude, 
+    csci = Result
+  ) %>% 
+  mutate(
+    SampleDate = ymd(SampleDate), 
+    COMID = as.character(COMID), 
+    rep = 1
+  ) %>% 
+  unite('SampleID', StationCode, SampleDate, rep, sep = '_', remove = F) %>% 
+  dplyr::select(SampleID, StationCode, lat, long, COMID, SampleDate, csci)
+scrs <- scrs %>% 
+  bind_rows(sgr_ex)
 
 # watersheds
 shed <- readOGR(shd_pth) %>% 
