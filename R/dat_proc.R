@@ -107,3 +107,13 @@ for(shd in shds){
   save(list = spat_shd, file = paste0('data/', spat_shd, '.RData'))
   
 }
+
+######
+# spat with wgs projection
+
+data(spat)
+
+prj <- '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+spat <- st_transform(spat, crs = prj)
+
+save(spat, file = 'data/spat.RData')
