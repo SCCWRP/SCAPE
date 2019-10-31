@@ -200,7 +200,7 @@ typ_lbs <- function(vec = NULL, thrsh = 0.79, tails = 0.05, obs_sc = FALSE, get_
     Type16 = paste('<', vls[1])
   ) %>% 
     enframe('vec', 'obs_sc') %>% 
-    unnest
+    unnest(cols = obs_sc)
   
   # assign factor levels to vec
   vec <- vec %>% 
@@ -261,7 +261,7 @@ get_perf_mlt <- function(scr_exp, lbs = c('over scoring (lu)', 'expected (lu)', 
 
 # master funcion that classifies everything using only thrsh and tails
 proc_all <- function(datin, scrs, thrsh, tails){
-  
+
   out <- plot_exp(datin, scrs, thrsh = thrsh, tails = tails) %>% 
     get_perf_mlt %>% 
     mutate(datcut = map(datcut, function(x){
@@ -277,7 +277,7 @@ proc_all <- function(datin, scrs, thrsh, tails){
     })
     ) %>% 
     mutate(data = map(data, spread, var, val)) %>% 
-    unnest %>% 
+    unnest(data, datcut, strcls_int) %>% 
     rename(
       `Relative\nscore` = perf_mlt,
       `Stream class` = strcls, 
@@ -306,7 +306,7 @@ get_tab <- function(datin, thrsh = 0.79, tails = 0.05, lbs_str = list('likely un
   # type labels from codes
   lbs <- typ_lbs(get_cds = T) %>%
     enframe('typelv', 'codes') %>%
-    unnest %>%
+    unnest(codes) %>%
     separate(codes, c('strcls', 'perf', 'thrsh'), sep = '_', remove = FALSE) %>% 
     mutate(
       typelv = factor(typelv, levels = typelv),
@@ -417,6 +417,7 @@ getcls <- function(datin, thrsh = 0.79, tails = 0.05,  modls = c('core', 'full')
     ) %>% 
     unnest(medv) %>% 
     arrange(medv) %>% 
+    ungroup %>% 
     mutate(COMID = factor(COMID, levels = COMID)) %>% 
     unnest(strcls_int) 
   
@@ -492,7 +493,8 @@ getcls2 <- function(datin, thrsh = 0.79, tails = 0.05, modls = c('core', 'full')
       
     ) %>% 
     select(-data) %>% 
-    unnest 
+    unnest(strcls_int) %>% 
+    ungroup
   
   # subset lbs by those in interval
   lbs <- unique(dat$strcls_int) %>% 
@@ -603,7 +605,7 @@ get_pri_inp <- function(input, plot_ex, scr_exp_map){
   scr_pri[unlist(map(scr_pri, is.null))] <- ''
   scr_pri <- scr_pri %>% 
     enframe('Site', 'Priority') %>% 
-    unnest %>% 
+    unnest(Priority) %>% 
     mutate(
       Site = factor(Site, levels = levels(ex_jn$Site))
     ) %>%

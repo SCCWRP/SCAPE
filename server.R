@@ -274,9 +274,10 @@ server <- function(input, output, session) {
       select(StationCode, lat, long, SampleDate) %>% 
       group_by(StationCode) %>% 
       nest %>% 
+      ungroup %>% 
       mutate(StationCode = factor(StationCode, levels = levels(incl$StationCode))) %>% 
       left_join(incl, ., by = 'StationCode') %>% 
-      unnest
+      unnest(c(data.x, data.y))
     
     # add additional perf column for multicolor by strcls (pal_prf)
     out <- get_perf_mlt(out)
@@ -324,10 +325,11 @@ server <- function(input, output, session) {
     
     # to join to get all types (for those with zero)
     alltyp <- data.frame(Type = paste0('Type', sprintf('%02d', seq(1, 16))), stringsAsFactors = F)
-    
+
     # get priority counts, join with allpri for all priority categories
     out <- scr_pri() %>% 
-      unnest %>% 
+      select(-Priority) %>% 
+      unnest(value) %>% 
       rename(Type = typelv) %>% 
       group_by(Priority, Type) %>% 
       nest %>% 
@@ -337,10 +339,11 @@ server <- function(input, output, session) {
       group_by(Priority) %>% 
       nest %>% 
       mutate(data = map(data, ~ left_join(alltyp, .x, by = 'Type'))) %>% 
-      unnest %>% 
+      unnest(data) %>% 
       mutate(
         n = map(n, ~ ifelse(is.null(.x), 0, .x))
-      )
+      ) %>% 
+      ungroup
     
     return(out)
     
@@ -350,10 +353,11 @@ server <- function(input, output, session) {
   cnts <- reactive({
     out <- allcnts() %>%
       select(Priority, n) %>%
-      unnest %>%
+      unnest(n) %>%
       group_by(Priority) %>%
       summarise(n = sum(n)) %>%
       mutate(n = as.character(n)) %>%
+      ungroup %>% 
       deframe %>%
       as.list
     
@@ -373,7 +377,7 @@ server <- function(input, output, session) {
     # CSCI scores and expectations
     toplo1 <- scr_exp_map() %>%
       select(COMID, StationCode, datcut, strcls, csci, perf, typelv, perf_mlt) %>%
-      unnest %>%
+      unnest(datcut) %>%
       mutate(
         strcls = factor(strcls, levels = rev(levels(strcls))),
         perf = factor(perf, levels = rev(levels(perf)))
@@ -387,14 +391,14 @@ server <- function(input, output, session) {
     # total expected range
     toplo2 <- scr_exp_map() %>%
       select(COMID, StationCode, data, strcls) %>%
-      unnest %>%
+      unnest(data) %>%
       mutate(strcls = factor(strcls, levels = rev(levels(strcls)))) %>%
       rename(`Stream Class` = strcls)
     
     # median expectation
     toplo3 <- scr_exp_map() %>%
       select(COMID, StationCode, datcut) %>%
-      unnest %>%
+      unnest(datcut) %>%
       filter(grepl('0\\.50$', var))
     
     # arrange by station if true
@@ -465,7 +469,7 @@ server <- function(input, output, session) {
 
       todl <- scr_exp_map() %>%
         select(COMID, StationCode, SampleDate, datcut, strcls, csci, perf, typelv, perf_mlt) %>%
-        unnest %>%
+        unnest(datcut) %>%
         rename(
           `Stream Class` = strcls, 
           `Relative CSCI` = perf
