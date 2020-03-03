@@ -405,14 +405,16 @@ server <- function(input, output, session) {
     if(bysta){
       
       toplo1 <- toplo1 %>%
+        ungroup %>% 
         mutate(StationCode = as.character(StationCode)) %>%
-        arrange(StationCode)%>%
+        arrange(StationCode) %>%
         mutate(
           StationCode = factor(StationCode),
           StationCode = factor(StationCode, levels = rev(levels(StationCode)))
         )
       
       toplo2 <- toplo2 %>%
+        ungroup %>% 
         mutate(StationCode = as.character(StationCode)) %>%
         arrange(StationCode) %>%
         mutate(
@@ -506,8 +508,8 @@ server <- function(input, output, session) {
         axis.text.x = element_blank(),
         legend.position = 'top'
       )
-    
-    p <- ggplot(plot_ex(), aes(x = typelv)) +
+  
+    p <- ggplot(plot_ex(), aes(x = factor(typelv))) +
       geom_errorbar(aes(ymin = minv, ymax = maxv, colour = `Stream class`), width = 0, size = 2, alpha = 0.2) +
       geom_errorbar(aes(ymin = minv_qt, ymax = maxv_qt, colour = `Stream class`), width = 0, size = 2, alpha = 0.7) +
       geom_point(aes(y  = `CSCI score`, fill = `Stream class`, shape = perf), size = 7, alpha = 0.8) +
@@ -518,7 +520,7 @@ server <- function(input, output, session) {
                         guide = F) +
       scale_shape_manual('Relative site score', values = c(24, 21, 25), 
                          guide = guide_legend(direction = 'veritical', title.position = 'left')) +
-      scale_x_discrete(limits = rev(levels(plot_ex()$typelv))) +
+      scale_x_discrete(limits = rev(levels(factor(plot_ex()$typelv)))) +
       mythm +
       coord_flip()
     
