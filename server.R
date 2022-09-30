@@ -9,6 +9,7 @@ library(leaflet.minicharts)
 library(manipulateWidget)
 library(RColorBrewer)
 library(gridExtra)
+library(here)
 source('R/funcs.R')
 
 prj <- '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
@@ -25,18 +26,18 @@ pal_exp <- colorFactor(
 crsz <- 11
 trsz <- 15
 mapicons <- iconList(
-  `over scoring (lu)` = makeIcon("www/overlu.png", trsz, trsz),
-  `expected (lu)` = makeIcon("www/explu.png", crsz, crsz),
-  `under scoring (lu)`= makeIcon("www/underlu.png", trsz, trsz),
-  `over scoring (pu)` = makeIcon("www/overpu.png", trsz, trsz),
-  `expected (pu)` = makeIcon("www/exppu.png", crsz, crsz),
-  `under scoring (pu)`= makeIcon("www/underpu.png", trsz, trsz),
-  `over scoring (pc)` = makeIcon("www/overpc.png", trsz, trsz),
-  `expected (pc)` = makeIcon("www/exppc.png", crsz, crsz),
-  `under scoring (pc)`= makeIcon("www/underpc.png", trsz, trsz),
-  `over scoring (lc)` = makeIcon("www/overlc.png", trsz, trsz),
-  `expected (lc)` = makeIcon("www/explc.png", crsz, crsz),
-  `under scoring (lc)`= makeIcon("www/underlc.png", trsz, trsz)
+  `over scoring (lu)` = makeIcon(here("www/overlu.png"), trsz, trsz),
+  `expected (lu)` = makeIcon(here("www/explu.png"), crsz, crsz),
+  `under scoring (lu)`= makeIcon(here("www/underlu.png"), trsz, trsz),
+  `over scoring (pu)` = makeIcon(here("www/overpu.png"), trsz, trsz),
+  `expected (pu)` = makeIcon(here("www/exppu.png"), crsz, crsz),
+  `under scoring (pu)`= makeIcon(here("www/underpu.png"), trsz, trsz),
+  `over scoring (pc)` = makeIcon(here("www/overpc.png"), trsz, trsz),
+  `expected (pc)` = makeIcon(here("www/exppc.png"), crsz, crsz),
+  `under scoring (pc)`= makeIcon(here("www/underpc.png"), trsz, trsz),
+  `over scoring (lc)` = makeIcon(here("www/overlc.png"), trsz, trsz),
+  `expected (lc)` = makeIcon(here("www/explc.png"), crsz, crsz),
+  `under scoring (lc)`= makeIcon(here("www/underlc.png"), trsz, trsz)
 )
 
 sts <- paste('Site', seq(1:16))
@@ -113,7 +114,7 @@ server <- function(input, output, session) {
     scrs() %>% 
       st_as_sf(coords = c('long', 'lat')) %>% 
       st_set_crs(prj) %>% 
-      mapview(layer.name = 'reset') %>% 
+      mapview(layer.name = 'reset', hide = TRUE) %>% 
       .@map
     
   })
