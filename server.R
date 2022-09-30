@@ -9,7 +9,6 @@ library(leaflet.minicharts)
 library(manipulateWidget)
 library(RColorBrewer)
 library(gridExtra)
-library(here)
 source('R/funcs.R')
 
 prj <- '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
@@ -26,18 +25,18 @@ pal_exp <- colorFactor(
 crsz <- 11
 trsz <- 15
 mapicons <- iconList(
-  `over scoring (lu)` = makeIcon(here("www/overlu.png"), trsz, trsz),
-  `expected (lu)` = makeIcon(here("www/explu.png"), crsz, crsz),
-  `under scoring (lu)`= makeIcon(here("www/underlu.png"), trsz, trsz),
-  `over scoring (pu)` = makeIcon(here("www/overpu.png"), trsz, trsz),
-  `expected (pu)` = makeIcon(here("www/exppu.png"), crsz, crsz),
-  `under scoring (pu)`= makeIcon(here("www/underpu.png"), trsz, trsz),
-  `over scoring (pc)` = makeIcon(here("www/overpc.png"), trsz, trsz),
-  `expected (pc)` = makeIcon(here("www/exppc.png"), crsz, crsz),
-  `under scoring (pc)`= makeIcon(here("www/underpc.png"), trsz, trsz),
-  `over scoring (lc)` = makeIcon(here("www/overlc.png"), trsz, trsz),
-  `expected (lc)` = makeIcon(here("www/explc.png"), crsz, crsz),
-  `under scoring (lc)`= makeIcon(here("www/underlc.png"), trsz, trsz)
+  `over scoring (lu)` = makeIcon(iconUrl = "www/overlu.png", iconWidth = trsz, iconHeight = trsz),
+  `expected (lu)` = makeIcon(iconUrl = "www/explu.png", iconWidth = crsz, iconHeight = crsz),
+  `under scoring (lu)`= makeIcon(iconUrl = "www/underlu.png", iconWidth = trsz, iconHeight = trsz),
+  `over scoring (pu)` = makeIcon(iconUrl = "www/overpu.png", iconWidth = trsz, iconHeight = trsz),
+  `expected (pu)` = makeIcon(iconUrl = "www/exppu.png", iconWidth = crsz, iconHeight = crsz),
+  `under scoring (pu)`= makeIcon(iconUrl = "www/underpu.png", iconWidth = trsz, iconHeight = trsz),
+  `over scoring (pc)` = makeIcon(iconUrl = "www/overpc.png", iconWidth = trsz, iconHeight = trsz),
+  `expected (pc)` = makeIcon(iconUrl = "www/exppc.png", iconWidth = crsz, iconHeight = crsz),
+  `under scoring (pc)`= makeIcon(iconUrl = "www/underpc.png", iconWidth = trsz, iconHeight = trsz),
+  `over scoring (lc)` = makeIcon(iconUrl = "www/overlc.png", iconWidth =  trsz, iconHeight = trsz),
+  `expected (lc)` = makeIcon(iconUrl = "www/explc.png", iconWidth = crsz, iconHeight = crsz),
+  `under scoring (lc)`= makeIcon(iconUrl = "www/underlc.png", iconWidth = trsz, iconHeight = trsz)
 )
 
 sts <- paste('Site', seq(1:16))
@@ -624,7 +623,7 @@ server <- function(input, output, session) {
       ) %>%
       addMarkers(data = scr_exp_map, lng = ~long, lat = ~lat,
                  label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt),
-                 icon = ~mapicons[perf_mlt]
+                 icon = ~mapicons[as.character(perf_mlt)]
                  
       )
     
@@ -689,7 +688,7 @@ server <- function(input, output, session) {
       pri_pro <- pri_pro %>% 
         addMarkers(data = dat_pro[[1]], lng = ~long, lat = ~lat,
                    label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt, ', ', typelv),
-                   icon = ~mapicons[perf_mlt]
+                   icon = ~mapicons[as.character(perf_mlt)]
                    
         )
       
@@ -701,7 +700,7 @@ server <- function(input, output, session) {
       pri_inv <- pri_inv %>% 
         addMarkers(data = dat_inv[[1]], lng = ~long, lat = ~lat,
                    label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt, ', ', typelv),
-                   icon = ~mapicons[perf_mlt]
+                   icon = ~mapicons[as.character(perf_mlt)]
                    
         )
         
@@ -713,7 +712,7 @@ server <- function(input, output, session) {
       pri_res <- pri_res %>% 
         addMarkers(data = dat_res[[1]], lng = ~long, lat = ~lat,
                    label = ~paste0(StationCode, ', CSCI: ', as.character(round(csci, 2)), ', ', perf_mlt, ', ', typelv),
-                   icon = ~mapicons[perf_mlt]
+                   icon = ~mapicons[as.character(perf_mlt)]
                    
         ) 
       
